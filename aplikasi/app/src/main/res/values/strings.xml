@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MOKOLI</string>
+    <string name="Select">Jumlah Token</string>
+
+    <string-array name="tipe_akun_options">
+        <item>Tipe Akun</item>
+        <item>Pemilik</item>
+        <item>Penyewa</item>
+    </string-array>
+
+        <string name="msg_token_fmt">Token: %s</string>
+
+
+</resources>

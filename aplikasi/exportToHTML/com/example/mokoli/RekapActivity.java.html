@@ -1,0 +1,197 @@
+<html>
+<head>
+<title>RekapActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+RekapActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.util.Log</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.LinearLayoutManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestore</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Collections</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.HashMap</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.List</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Map</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">RekapActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+    <span class="s0">private </span><span class="s1">FirebaseFirestore firestore</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">RecyclerView recyclerView</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">RekapAdapter adapter</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">List&lt;RekapItem&gt; rekapList</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_rekap)</span><span class="s0">;</span>
+
+        <span class="s2">// Inisialisasi Firestore</span>
+        <span class="s1">firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+
+        <span class="s2">// Inisialisasi RecyclerView dan adapter</span>
+        <span class="s1">recyclerView = findViewById(R.id.recyclerViewrekap)</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setHasFixedSize(</span><span class="s0">true</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setLayoutManager(</span><span class="s0">new </span><span class="s1">LinearLayoutManager(</span><span class="s0">this</span><span class="s1">))</span><span class="s0">;</span>
+
+        <span class="s1">rekapList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">adapter = </span><span class="s0">new </span><span class="s1">RekapAdapter(</span><span class="s0">this, </span><span class="s1">rekapList)</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setAdapter(adapter)</span><span class="s0">;</span>
+
+        <span class="s2">// Ambil data dari Firestore</span>
+        <span class="s1">fetchDataFromFirestore()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">fetchDataFromFirestore() {</span>
+        <span class="s2">// Ambil semua dokumen dari koleksi riwayat</span>
+        <span class="s1">firestore.collection(</span><span class="s3">&quot;riwayat&quot;</span><span class="s1">)</span>
+                <span class="s1">.get()</span>
+                <span class="s1">.addOnSuccessListener(queryDocumentSnapshots -&gt; {</span>
+                    <span class="s2">// Reset rekapList</span>
+                    <span class="s1">rekapList.clear()</span><span class="s0">;</span>
+
+                    <span class="s2">// Inisialisasi map untuk menyimpan total pembelian token dan jumlah token untuk setiap bulan</span>
+                    <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Double&gt; totalPembelianTokenMap = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+                    <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Double&gt; totalJumlahTokenMap = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+
+                    <span class="s2">// Proses setiap dokumen dalam hasil query</span>
+                    <span class="s0">for </span><span class="s1">(DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {</span>
+                        <span class="s2">// Dapatkan data dari dokumen</span>
+                        <span class="s1">String currentDate = documentSnapshot.getString(</span><span class="s3">&quot;currentDate&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s1">String pembelianToken = documentSnapshot.getString(</span><span class="s3">&quot;pembelianToken&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s1">String jumlahToken = documentSnapshot.getString(</span><span class="s3">&quot;jumlahToken&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+                        <span class="s2">// Ekstrak bulan dari tanggal</span>
+                        <span class="s1">String[] parts = currentDate.split(</span><span class="s3">&quot; &quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s1">String bulan = parts[</span><span class="s4">1</span><span class="s1">]</span><span class="s0">; </span><span class="s2">// Ambil bagian bulan dari tanggal</span>
+
+                        <span class="s2">// Hitung total pembelian token dan jumlah token untuk bulan ini</span>
+                        <span class="s0">double </span><span class="s1">pembelianTokenValue = Double.parseDouble(pembelianToken.replaceAll(</span><span class="s3">&quot;[^</span><span class="s0">\\</span><span class="s3">d]+&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s1">))</span><span class="s0">;</span>
+                        <span class="s0">double </span><span class="s1">jumlahTokenValue = Double.parseDouble(jumlahToken.replace(</span><span class="s3">&quot;,&quot;</span><span class="s0">, </span><span class="s3">&quot;.&quot;</span><span class="s1">))</span><span class="s0">;</span>
+
+                        <span class="s1">totalPembelianTokenMap.put(bulan</span><span class="s0">, </span><span class="s1">totalPembelianTokenMap.getOrDefault(bulan</span><span class="s0">, </span><span class="s4">0.0</span><span class="s1">) + pembelianTokenValue)</span><span class="s0">;</span>
+                        <span class="s1">totalJumlahTokenMap.put(bulan</span><span class="s0">, </span><span class="s1">totalJumlahTokenMap.getOrDefault(bulan</span><span class="s0">, </span><span class="s4">0.0</span><span class="s1">) + jumlahTokenValue)</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+
+                    <span class="s2">// Simpan total pembelian token dan jumlah token ke Firestore</span>
+                    <span class="s1">saveRekapDataToFirestore(totalPembelianTokenMap</span><span class="s0">, </span><span class="s1">totalJumlahTokenMap)</span><span class="s0">;</span>
+
+                    <span class="s2">// Tampilkan data dari Firestore di RecyclerView</span>
+                    <span class="s1">fetchRekapDataFromFirestore()</span><span class="s0">;</span>
+                <span class="s1">})</span>
+                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                    <span class="s2">// Tampilkan pesan error jika gagal mengambil data</span>
+                    <span class="s1">Toast.makeText(RekapActivity.</span><span class="s0">this, </span><span class="s3">&quot;Gagal mengambil data dari Firestore&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s1">Log.e(</span><span class="s3">&quot;RekapActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;Error fetching data&quot;</span><span class="s0">, </span><span class="s1">e)</span><span class="s0">;</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">saveRekapDataToFirestore(Map&lt;String</span><span class="s0">, </span><span class="s1">Double&gt; totalPembelianTokenMap</span><span class="s0">, </span><span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Double&gt; totalJumlahTokenMap) {</span>
+        <span class="s0">for </span><span class="s1">(String bulan : totalPembelianTokenMap.keySet()) {</span>
+            <span class="s0">double </span><span class="s1">totalPembelianToken = totalPembelianTokenMap.get(bulan)</span><span class="s0">;</span>
+            <span class="s0">double </span><span class="s1">totalJumlahToken = totalJumlahTokenMap.get(bulan)</span><span class="s0">;</span>
+
+            <span class="s2">// Buat objek Map untuk menyimpan data rekap</span>
+            <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; rekapData = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+            <span class="s1">rekapData.put(</span><span class="s3">&quot;bulan&quot;</span><span class="s0">, </span><span class="s1">bulan)</span><span class="s0">;</span>
+            <span class="s1">rekapData.put(</span><span class="s3">&quot;totalPembelianToken&quot;</span><span class="s0">, </span><span class="s1">totalPembelianToken)</span><span class="s0">;</span>
+            <span class="s1">rekapData.put(</span><span class="s3">&quot;totalJumlahToken&quot;</span><span class="s0">, </span><span class="s1">totalJumlahToken)</span><span class="s0">;</span>
+
+            <span class="s2">// Simpan data rekap ke dalam Firestore</span>
+            <span class="s1">firestore.collection(</span><span class="s3">&quot;rekap&quot;</span><span class="s1">).document(bulan)</span>
+                    <span class="s1">.set(rekapData)</span>
+                    <span class="s1">.addOnSuccessListener(aVoid -&gt; Log.d(</span><span class="s3">&quot;RekapActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;Data rekap berhasil disimpan&quot;</span><span class="s1">))</span>
+                    <span class="s1">.addOnFailureListener(e -&gt; Log.e(</span><span class="s3">&quot;RekapActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;Gagal menyimpan data rekap&quot;</span><span class="s0">, </span><span class="s1">e))</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">fetchRekapDataFromFirestore() {</span>
+        <span class="s2">// Ambil semua dokumen dari koleksi rekap</span>
+        <span class="s1">firestore.collection(</span><span class="s3">&quot;rekap&quot;</span><span class="s1">)</span>
+                <span class="s1">.get()</span>
+                <span class="s1">.addOnSuccessListener(queryDocumentSnapshots -&gt; {</span>
+                    <span class="s2">// Proses setiap dokumen dalam hasil query</span>
+                    <span class="s1">List&lt;DocumentSnapshot&gt; documents = queryDocumentSnapshots.getDocuments()</span><span class="s0">;</span>
+                    <span class="s1">Collections.sort(documents</span><span class="s0">, </span><span class="s1">(doc1</span><span class="s0">, </span><span class="s1">doc2) -&gt; {</span>
+                        <span class="s1">String bulan1 = doc1.getString(</span><span class="s3">&quot;bulan&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s1">String bulan2 = doc2.getString(</span><span class="s3">&quot;bulan&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s0">return </span><span class="s1">Integer.compare(getMonthNumber(bulan1)</span><span class="s0">, </span><span class="s1">getMonthNumber(bulan2))</span><span class="s0">;</span>
+                    <span class="s1">})</span><span class="s0">;</span>
+
+                    <span class="s2">// Bersihkan list rekap sebelum menambahkan data baru</span>
+                    <span class="s1">rekapList.clear()</span><span class="s0">;</span>
+
+                    <span class="s2">// Tambahkan data ke dalam list rekap</span>
+                    <span class="s0">for </span><span class="s1">(DocumentSnapshot documentSnapshot : documents) {</span>
+                        <span class="s1">String bulan = documentSnapshot.getString(</span><span class="s3">&quot;bulan&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s0">double </span><span class="s1">totalPembelianToken = documentSnapshot.getDouble(</span><span class="s3">&quot;totalPembelianToken&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s0">double </span><span class="s1">totalJumlahToken = documentSnapshot.getDouble(</span><span class="s3">&quot;totalJumlahToken&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                        <span class="s1">rekapList.add(</span><span class="s0">new </span><span class="s1">RekapItem(bulan</span><span class="s0">, </span><span class="s1">totalPembelianToken</span><span class="s0">, </span><span class="s1">totalJumlahToken))</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+
+                    <span class="s2">// Setelah selesai, refresh RecyclerView</span>
+                    <span class="s1">adapter.notifyDataSetChanged()</span><span class="s0">;</span>
+                <span class="s1">})</span>
+                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                    <span class="s2">// Tampilkan pesan error jika gagal mengambil data</span>
+                    <span class="s1">Toast.makeText(RekapActivity.</span><span class="s0">this, </span><span class="s3">&quot;Gagal mengambil data rekap dari Firestore&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s1">Log.e(</span><span class="s3">&quot;RekapActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;Error fetching rekap data&quot;</span><span class="s0">, </span><span class="s1">e)</span><span class="s0">;</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private int </span><span class="s1">getMonthNumber(String month) {</span>
+        <span class="s0">switch </span><span class="s1">(month.toLowerCase()) {</span>
+            <span class="s0">case </span><span class="s3">&quot;januari&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;februari&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">2</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;maret&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">3</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;april&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">4</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;mei&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">5</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;juni&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">6</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;juli&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">7</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;agustus&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">8</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;september&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">9</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;oktober&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">10</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;november&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">11</span><span class="s0">;</span>
+            <span class="s0">case </span><span class="s3">&quot;desember&quot;</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">12</span><span class="s0">;</span>
+            <span class="s0">default</span><span class="s1">:</span>
+                <span class="s0">return </span><span class="s4">0</span><span class="s0">; </span><span class="s2">// Jika nama bulan tidak valid</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Transaksi.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Transaksi.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">Transaksi {</span>
+    <span class="s0">private </span><span class="s1">String currentDate</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">String pembelianToken</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">String jumlahToken</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">String metodePembayaran</span><span class="s0">;</span>
+
+    <span class="s0">public </span><span class="s1">Transaksi() {</span>
+        <span class="s2">// Diperlukan konstruktor kosong untuk Firestore</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">Transaksi(String currentDate</span><span class="s0">, </span><span class="s1">String pembelianToken</span><span class="s0">, </span><span class="s1">String jumlahToken</span><span class="s0">, </span><span class="s1">String metodePembayaran) {</span>
+        <span class="s0">this</span><span class="s1">.currentDate = currentDate</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.pembelianToken = pembelianToken</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.jumlahToken = jumlahToken</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.metodePembayaran = metodePembayaran</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">String getCurrentDate() {</span>
+        <span class="s0">return </span><span class="s1">currentDate</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setCurrentDate(String currentDate) {</span>
+        <span class="s0">this</span><span class="s1">.currentDate = currentDate</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">String getPembelianToken() {</span>
+        <span class="s0">return </span><span class="s1">pembelianToken</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setPembelianToken(String pembelianToken) {</span>
+        <span class="s0">this</span><span class="s1">.pembelianToken = pembelianToken</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">String getJumlahToken() {</span>
+        <span class="s0">return </span><span class="s1">jumlahToken</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setJumlahToken(String jumlahToken) {</span>
+        <span class="s0">this</span><span class="s1">.jumlahToken = jumlahToken</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">String getMetodePembayaran() {</span>
+        <span class="s0">return </span><span class="s1">metodePembayaran</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setMetodePembayaran(String metodePembayaran) {</span>
+        <span class="s0">this</span><span class="s1">.metodePembayaran = metodePembayaran</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

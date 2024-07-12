@@ -1,0 +1,380 @@
+<html>
+<head>
+<title>TransaksiPenyewaActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+TransaksiPenyewaActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.annotation.SuppressLint</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.app.ProgressDialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.database.Cursor</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.net.Uri</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.provider.MediaStore</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.provider.OpenableColumns</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.util.Log</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.AdapterView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageButton</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Spinner</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.Nullable</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.cardview.widget.CardView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestore</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.FirebaseStorage</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.StorageReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.UploadTask</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.text.SimpleDateFormat</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Date</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.HashMap</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Locale</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Map</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">TransaksiPenyewaActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity </span><span class="s0">implements </span><span class="s1">AdapterView.OnItemSelectedListener {</span>
+
+    <span class="s1">TextView title</span><span class="s0">, </span><span class="s1">token</span><span class="s0">, </span><span class="s1">jumlah</span><span class="s0">, </span><span class="s1">total</span><span class="s0">, </span><span class="s1">tgl</span><span class="s0">, </span><span class="s1">pembelianTokenTextView</span><span class="s0">, </span><span class="s1">jumlahTokenTextView</span><span class="s0">, </span><span class="s1">namaFile</span><span class="s0">, </span><span class="s1">tglRequestTextView</span><span class="s0">, </span><span class="s1">pembelianTokenCardTextView</span><span class="s0">, </span><span class="s1">jumlahTokenCardTextView</span><span class="s0">, </span><span class="s1">nama</span><span class="s0">;</span>
+    <span class="s1">Button req</span><span class="s0">;</span>
+    <span class="s1">CardView cardview</span><span class="s0">;</span>
+    <span class="s1">Spinner spinnerToken</span><span class="s0">, </span><span class="s1">spinnerPembayaran</span><span class="s0">;</span>
+    <span class="s1">ImageButton camera</span><span class="s0">;</span>
+    <span class="s1">ImageView imageView</span><span class="s0">;</span>
+    <span class="s0">int </span><span class="s1">width = </span><span class="s2">150</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">Uri selectedImageUri</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">ArrayList&lt;CustomItem&gt; customList</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">ArrayList&lt;CustomItem&gt; customList1</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">FirebaseFirestore firestore</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">FirebaseStorage storage</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">String currentDate</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">String selectedSpinnerItem</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">String totalText</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">CustomItem selectItem</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">String imageURL</span><span class="s0">;</span>
+
+    <span class="s1">@SuppressLint(</span><span class="s3">&quot;MissingInflatedId&quot;</span><span class="s1">)</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_transaksi_penyewa)</span><span class="s0">;</span>
+
+        <span class="s4">// Initialize Firestore</span>
+        <span class="s1">firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+
+        <span class="s4">// Initialize Firebase Storage</span>
+        <span class="s1">storage = FirebaseStorage.getInstance()</span><span class="s0">;</span>
+
+        <span class="s4">// Initialize Views</span>
+        <span class="s1">title = findViewById(R.id.tittle)</span><span class="s0">;</span>
+        <span class="s1">token = findViewById(R.id.tokentransaksi)</span><span class="s0">;</span>
+        <span class="s1">jumlah = findViewById(R.id.jmltoken)</span><span class="s0">;</span>
+        <span class="s1">total = findViewById(R.id.total)</span><span class="s0">;</span>
+        <span class="s1">tgl = findViewById(R.id.tgl)</span><span class="s0">;</span>
+        <span class="s1">cardview = findViewById(R.id.cardViewRincian)</span><span class="s0">;</span>
+        <span class="s1">pembelianTokenTextView = findViewById(R.id.pembelianTokenTextView)</span><span class="s0">;</span>
+        <span class="s1">jumlahTokenTextView = findViewById(R.id.jumlahTokenTextView)</span><span class="s0">;</span>
+        <span class="s1">req = findViewById(R.id.btnreq)</span><span class="s0">;</span>
+        <span class="s1">spinnerToken = findViewById(R.id.Spinnertransaksi)</span><span class="s0">;</span>
+        <span class="s1">spinnerPembayaran = findViewById(R.id.Spinnerpembayaran)</span><span class="s0">;</span>
+        <span class="s1">namaFile = findViewById(R.id.namafile)</span><span class="s0">;</span>
+        <span class="s1">camera = findViewById(R.id.camera)</span><span class="s0">;</span>
+        <span class="s1">nama = findViewById(R.id.user)</span><span class="s0">;</span>
+
+        <span class="s1">tglRequestTextView = findViewById(R.id.tgl)</span><span class="s0">;</span>
+        <span class="s1">pembelianTokenCardTextView = findViewById(R.id.pembelianTokenTextView)</span><span class="s0">;</span>
+        <span class="s1">jumlahTokenCardTextView = findViewById(R.id.jumlahTokenTextView)</span><span class="s0">;</span>
+
+        <span class="s1">customList = getCustomList()</span><span class="s0">;</span>
+        <span class="s1">customList1 = getCustomList1()</span><span class="s0">;</span>
+
+        <span class="s1">CustomAdapter adapterToken = </span><span class="s0">new </span><span class="s1">CustomAdapter(</span><span class="s0">this, </span><span class="s1">customList)</span><span class="s0">;</span>
+        <span class="s1">spinnerToken.setAdapter(adapterToken)</span><span class="s0">;</span>
+        <span class="s1">spinnerToken.setOnItemSelectedListener(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">CustomAdapter adapterMetode = </span><span class="s0">new </span><span class="s1">CustomAdapter(</span><span class="s0">this, </span><span class="s1">customList1)</span><span class="s0">;</span>
+        <span class="s1">spinnerPembayaran.setAdapter(adapterMetode)</span><span class="s0">;</span>
+        <span class="s1">spinnerPembayaran.setOnItemSelectedListener(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s4">// Set &quot;Metode Pembayaran&quot; and &quot;Pembelian Token&quot; unselectable</span>
+        <span class="s1">spinnerToken.setSelection(</span><span class="s2">0</span><span class="s0">, false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">spinnerPembayaran.setSelection(</span><span class="s2">0</span><span class="s0">, false</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">req.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">currentDate = </span><span class="s0">new </span><span class="s1">SimpleDateFormat(</span><span class="s3">&quot;dd MMMM yyyy&quot;</span><span class="s0">, </span><span class="s1">Locale.getDefault()).format(</span><span class="s0">new </span><span class="s1">Date())</span><span class="s0">;</span>
+                <span class="s1">CustomItem selectedItem = (CustomItem) spinnerToken.getSelectedItem()</span><span class="s0">;</span>
+                <span class="s1">selectItem = (CustomItem) spinnerPembayaran.getSelectedItem()</span><span class="s0">;</span>
+                <span class="s1">selectedSpinnerItem = selectedItem.getSpinnerItemName()</span><span class="s0">;</span>
+                <span class="s1">totalText = total.getText().toString()</span><span class="s0">;</span>
+
+                <span class="s1">tglRequestTextView.setText(currentDate)</span><span class="s0">;</span>
+                <span class="s1">pembelianTokenCardTextView.setText(selectedSpinnerItem)</span><span class="s0">;</span>
+                <span class="s1">jumlahTokenCardTextView.setText(totalText)</span><span class="s0">;</span>
+
+                <span class="s1">FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser()</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(currentUser != </span><span class="s0">null</span><span class="s1">) {</span>
+                    <span class="s0">if </span><span class="s1">(isDataValid()) {</span>
+                        <span class="s4">// Panggil metode saveRequestToFirestore dengan URL gambar yang telah diperoleh sebelumnya</span>
+                        <span class="s1">saveRequestToFirestore(currentUser.getUid())</span><span class="s0">;</span>
+                        <span class="s1">cardview.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                        <span class="s1">clearInputFields()</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">Log.d(</span><span class="s3">&quot;TransaksiPenyewaActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;No user logged in.&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+
+        <span class="s1">camera.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(Intent.ACTION_PICK</span><span class="s0">, </span><span class="s1">MediaStore.Images.Media.EXTERNAL_CONTENT_URI)</span><span class="s0">;</span>
+                <span class="s1">startActivityForResult(intent</span><span class="s0">, </span><span class="s2">100</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser()</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(currentUser != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">getUserDataFromFirestore(currentUser.getUid())</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">Log.d(</span><span class="s3">&quot;TransaksiPenyewaActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;No user logged in.&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">saveRequestToFirestore(String userId) {</span>
+        <span class="s1">currentDate = </span><span class="s0">new </span><span class="s1">SimpleDateFormat(</span><span class="s3">&quot;dd MMMM yyyy&quot;</span><span class="s0">, </span><span class="s1">Locale.getDefault()).format(</span><span class="s0">new </span><span class="s1">Date())</span><span class="s0">;</span>
+        <span class="s1">CustomItem selectedItem = (CustomItem) spinnerToken.getSelectedItem()</span><span class="s0">;</span>
+        <span class="s1">selectItem = (CustomItem) spinnerPembayaran.getSelectedItem()</span><span class="s0">;</span>
+        <span class="s1">selectedSpinnerItem = selectedItem.getSpinnerItemName()</span><span class="s0">;</span>
+        <span class="s1">totalText = total.getText().toString()</span><span class="s0">;</span>
+
+        <span class="s1">tglRequestTextView.setText(currentDate)</span><span class="s0">;</span>
+        <span class="s1">pembelianTokenCardTextView.setText(selectedSpinnerItem)</span><span class="s0">;</span>
+        <span class="s1">jumlahTokenCardTextView.setText(totalText)</span><span class="s0">;</span>
+
+        <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; requestData = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">requestData.put(</span><span class="s3">&quot;currentDate&quot;</span><span class="s0">, </span><span class="s1">currentDate)</span><span class="s0">;</span>
+        <span class="s1">requestData.put(</span><span class="s3">&quot;pembelianToken&quot;</span><span class="s0">, </span><span class="s1">selectedSpinnerItem)</span><span class="s0">;</span>
+        <span class="s1">requestData.put(</span><span class="s3">&quot;jumlahToken&quot;</span><span class="s0">, </span><span class="s1">totalText)</span><span class="s0">;</span>
+        <span class="s1">requestData.put(</span><span class="s3">&quot;metodePembayaran&quot;</span><span class="s0">, </span><span class="s1">selectItem.getSpinnerItemName())</span><span class="s0">;</span>
+        <span class="s1">requestData.put(</span><span class="s3">&quot;fullname&quot;</span><span class="s0">, </span><span class="s1">nama.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">requestData.put(</span><span class="s3">&quot;userId&quot;</span><span class="s0">, </span><span class="s1">userId)</span><span class="s0">; </span><span class="s4">// Menambahkan userID ke data transaksi</span>
+        <span class="s1">requestData.put(</span><span class="s3">&quot;buktiPembayaran&quot;</span><span class="s0">, </span><span class="s1">imageURL)</span><span class="s0">; </span><span class="s4">// Menambahkan URL gambar ke data transaksi</span>
+
+        <span class="s1">firestore.collection(</span><span class="s3">&quot;request_token&quot;</span><span class="s1">)</span>
+                <span class="s1">.add(requestData)</span>
+                <span class="s1">.addOnSuccessListener(documentReference -&gt; {</span>
+                    <span class="s1">Log.d(</span><span class="s3">&quot;Firestore&quot;</span><span class="s0">, </span><span class="s3">&quot;DocumentSnapshot added with ID: &quot; </span><span class="s1">+ documentReference.getId())</span><span class="s0">;</span>
+                    <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;Data berhasil disimpan ke Firestore&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s4">// Clear input fields setelah data berhasil disimpan</span>
+                    <span class="s1">clearInputFields()</span><span class="s0">;</span>
+                <span class="s1">})</span>
+                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                    <span class="s1">Log.e(</span><span class="s3">&quot;Firestore&quot;</span><span class="s0">, </span><span class="s3">&quot;Error adding document&quot;</span><span class="s0">, </span><span class="s1">e)</span><span class="s0">;</span>
+                    <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;Gagal menyimpan data ke Firestore&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+
+    <span class="s0">private boolean </span><span class="s1">isDataValid() {</span>
+        <span class="s0">if </span><span class="s1">(selectedImageUri == </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;Silakan pilih gambar bukti pembayaran&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s0">return false;</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(spinnerToken.getSelectedItemPosition() == </span><span class="s2">0</span><span class="s1">) {</span>
+            <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;Silakan pilih pembelian token&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s0">return false;</span>
+        <span class="s1">}</span>
+        <span class="s0">return true;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">private void </span><span class="s1">clearInputFields() {</span>
+        <span class="s1">total.setText(</span><span class="s3">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">namaFile.setText(</span><span class="s3">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">spinnerToken.setSelection(</span><span class="s2">0</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">spinnerPembayaran.setSelection(</span><span class="s2">0</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private </span><span class="s1">ArrayList&lt;CustomItem&gt; getCustomList1() {</span>
+        <span class="s1">ArrayList&lt;CustomItem&gt; customList1 = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">customList1.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Metode Pembayaran&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList1.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Cash&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList1.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Transfer&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">customList1</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private </span><span class="s1">ArrayList&lt;CustomItem&gt; getCustomList() {</span>
+        <span class="s1">ArrayList&lt;CustomItem&gt; customList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Pembelian Token&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Rp. 20.000&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Rp. 50.000&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Rp. 100.000&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Rp. 200.000&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s3">&quot;Rp. 500.000&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">customList</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onItemSelected(AdapterView&lt;?&gt; adapterView</span><span class="s0">, </span><span class="s1">View view</span><span class="s0">, int </span><span class="s1">position</span><span class="s0">, long </span><span class="s1">id) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">width = findViewById(R.id.customSpinnerItemLayout).getWidth()</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+            <span class="s1">e.printStackTrace()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+        <span class="s1">Spinner spinner = (Spinner) adapterView</span><span class="s0">;</span>
+        <span class="s1">spinner.setDropDownWidth(width)</span><span class="s0">;</span>
+
+        <span class="s0">switch </span><span class="s1">(spinner.getId()) {</span>
+            <span class="s0">case </span><span class="s1">R.id.Spinnertransaksi:</span>
+                <span class="s1">CustomItem item = (CustomItem) adapterView.getSelectedItem()</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(item.getSpinnerItemName().equals(</span><span class="s3">&quot;Pembelian Token&quot;</span><span class="s1">)) {</span>
+                    <span class="s1">total.setText(</span><span class="s3">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">total.setText(item.getSpinnerItemName())</span><span class="s0">;</span>
+                    <span class="s1">total.setTextColor(getResources().getColor(R.color.black))</span><span class="s0">;</span>
+                    <span class="s1">calculate(item)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s1">R.id.Spinnerpembayaran:</span>
+                <span class="s1">selectItem = customList1.get(position)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">calculate(CustomItem selectedItem) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s0">double </span><span class="s1">itemValue = Double.parseDouble(selectedItem.getSpinnerItemName().replaceAll(</span><span class="s3">&quot;[^</span><span class="s0">\\</span><span class="s3">d]+&quot;</span><span class="s0">, </span><span class="s3">&quot;&quot;</span><span class="s1">))</span><span class="s0">;</span>
+            <span class="s0">double </span><span class="s1">calculatedValue = (itemValue - (itemValue * </span><span class="s2">0.08</span><span class="s1">)) / </span><span class="s2">1444.70</span><span class="s0">;</span>
+            <span class="s1">String formattedResult = String.format(Locale.getDefault()</span><span class="s0">, </span><span class="s3">&quot;%.2f&quot;</span><span class="s0">, </span><span class="s1">calculatedValue)</span><span class="s0">;</span>
+            <span class="s1">total.setText(formattedResult)</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(NumberFormatException e) {</span>
+            <span class="s1">e.printStackTrace()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onNothingSelected(AdapterView&lt;?&gt; parent) {</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onActivityResult(</span><span class="s0">int </span><span class="s1">requestCode</span><span class="s0">, int </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">@Nullable Intent data) {</span>
+        <span class="s0">super</span><span class="s1">.onActivityResult(requestCode</span><span class="s0">, </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">data)</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(requestCode == </span><span class="s2">100 </span><span class="s1">&amp;&amp; resultCode == RESULT_OK &amp;&amp; data != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">selectedImageUri = data.getData()</span><span class="s0">;</span>
+            <span class="s1">String fileName = getFileName(selectedImageUri)</span><span class="s0">;</span>
+            <span class="s1">namaFile.setText(fileName)</span><span class="s0">;</span>
+            <span class="s4">// Langsung upload gambar ke Firebase Storage saat dipilih dari galeri</span>
+            <span class="s1">uploadBuktiPembayaranToFirestore(selectedImageUri)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@SuppressLint(</span><span class="s3">&quot;Range&quot;</span><span class="s1">)</span>
+    <span class="s0">private </span><span class="s1">String getFileName(Uri uri) {</span>
+        <span class="s1">String result = </span><span class="s0">null;</span>
+        <span class="s0">if </span><span class="s1">(uri.getScheme().equals(</span><span class="s3">&quot;content&quot;</span><span class="s1">)) {</span>
+            <span class="s1">Cursor cursor = getContentResolver().query(uri</span><span class="s0">, null, null, null, null</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s0">try </span><span class="s1">{</span>
+                <span class="s0">if </span><span class="s1">(cursor != </span><span class="s0">null </span><span class="s1">&amp;&amp; cursor.moveToFirst()) {</span>
+                    <span class="s1">result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">} </span><span class="s0">finally </span><span class="s1">{</span>
+                <span class="s0">if </span><span class="s1">(cursor != </span><span class="s0">null</span><span class="s1">) {</span>
+                    <span class="s1">cursor.close()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">if </span><span class="s1">(result == </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">result = uri.getPath()</span><span class="s0">;</span>
+            <span class="s0">int </span><span class="s1">cut = result.lastIndexOf(</span><span class="s3">'/'</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(cut != -</span><span class="s2">1</span><span class="s1">) {</span>
+                <span class="s1">result = result.substring(cut + </span><span class="s2">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">result</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">uploadBuktiPembayaranToFirestore(Uri imageUri) {</span>
+        <span class="s1">ProgressDialog progressDialog = </span><span class="s0">new </span><span class="s1">ProgressDialog(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">progressDialog.setMessage(</span><span class="s3">&quot;Uploading...&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">progressDialog.setCancelable(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">progressDialog.show()</span><span class="s0">;</span>
+
+        <span class="s0">if </span><span class="s1">(imageUri != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser()</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(currentUser != </span><span class="s0">null</span><span class="s1">) {</span>
+                <span class="s1">StorageReference storageRef = storage.getReference()</span><span class="s0">;</span>
+                <span class="s1">StorageReference imageRef = storageRef.child(</span><span class="s3">&quot;bukti_pembayaran&quot;</span><span class="s1">).child(imageUri.getLastPathSegment())</span><span class="s0">;</span>
+                <span class="s1">UploadTask uploadTask = imageRef.putFile(imageUri)</span><span class="s0">;</span>
+                <span class="s1">uploadTask.addOnSuccessListener(taskSnapshot -&gt; {</span>
+                    <span class="s4">// Ketika gambar berhasil diunggah, ambil URL gambar</span>
+                    <span class="s1">imageRef.getDownloadUrl().addOnSuccessListener(uri -&gt; {</span>
+                        <span class="s1">imageURL = uri.toString()</span><span class="s0">; </span><span class="s4">// Simpan URL gambar sebagai variabel global</span>
+                        <span class="s4">// Tampilkan toast ketika gambar berhasil diunggah</span>
+                        <span class="s1">progressDialog.dismiss()</span><span class="s0">;</span>
+                        <span class="s4">//Toast.makeText(TransaksiPenyewaActivity.this, &quot;Gambar berhasil diunggah ke Firebase Storage&quot;, Toast.LENGTH_SHORT).show();</span>
+                    <span class="s1">}).addOnFailureListener(exception -&gt; {</span>
+                        <span class="s1">Log.e(</span><span class="s3">&quot;FirebaseStorage&quot;</span><span class="s0">, </span><span class="s3">&quot;Failed to get image URL&quot;</span><span class="s0">, </span><span class="s1">exception)</span><span class="s0">;</span>
+                        <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;Failed to get image URL&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s1">})</span><span class="s0">;</span>
+                <span class="s1">}).addOnFailureListener(exception -&gt; {</span>
+                    <span class="s1">Log.e(</span><span class="s3">&quot;FirebaseStorage&quot;</span><span class="s0">, </span><span class="s3">&quot;Failed to upload image&quot;</span><span class="s0">, </span><span class="s1">exception)</span><span class="s0">;</span>
+                    <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;Failed to upload image&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">})</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s1">progressDialog.dismiss()</span><span class="s0">;</span>
+                <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;No user logged in&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">progressDialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">Toast.makeText(TransaksiPenyewaActivity.</span><span class="s0">this, </span><span class="s3">&quot;No image selected&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">getUserDataFromFirestore(String userId) {</span>
+        <span class="s1">DocumentReference userRef = firestore.collection(</span><span class="s3">&quot;users&quot;</span><span class="s1">).document(userId)</span><span class="s0">;</span>
+        <span class="s1">userRef.get().addOnCompleteListener(task -&gt; {</span>
+            <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                <span class="s1">DocumentSnapshot document = task.getResult()</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(document.exists()) {</span>
+                    <span class="s1">String fullname = document.getString(</span><span class="s3">&quot;fullName&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">nama.setText(fullname)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">Log.d(</span><span class="s3">&quot;Firestore&quot;</span><span class="s0">, </span><span class="s3">&quot;Document not found&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s1">Log.e(</span><span class="s3">&quot;FirestoreError&quot;</span><span class="s0">, </span><span class="s3">&quot;Failed to get user data&quot;</span><span class="s0">, </span><span class="s1">task.getException())</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

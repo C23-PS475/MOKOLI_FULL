@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>TransaksiAdapter.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+TransaksiAdapter.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">TransaksiAdapter </span><span class="s0">extends </span><span class="s1">RecyclerView.Adapter&lt;TransaksiAdapter.TransaksiViewHolder&gt; {</span>
+    <span class="s0">private </span><span class="s1">ArrayList&lt;Transaksi&gt; transaksiList</span><span class="s0">;</span>
+
+    <span class="s0">public </span><span class="s1">TransaksiAdapter(ArrayList&lt;Transaksi&gt; transaksiList) {</span>
+        <span class="s0">this</span><span class="s1">.transaksiList = transaksiList</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@NonNull</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">TransaksiViewHolder onCreateViewHolder(@NonNull ViewGroup parent</span><span class="s0">, int </span><span class="s1">viewType) {</span>
+        <span class="s1">View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history_penyewa</span><span class="s0">, </span><span class="s1">parent</span><span class="s0">, false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s0">return new </span><span class="s1">TransaksiViewHolder(view)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onBindViewHolder(@NonNull TransaksiViewHolder holder</span><span class="s0">, int </span><span class="s1">position) {</span>
+        <span class="s1">Transaksi transaksi = transaksiList.get(position)</span><span class="s0">;</span>
+        <span class="s1">holder.bind(transaksi)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public int </span><span class="s1">getItemCount() {</span>
+        <span class="s0">return </span><span class="s1">transaksiList.size()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public static class </span><span class="s1">TransaksiViewHolder </span><span class="s0">extends </span><span class="s1">RecyclerView.ViewHolder {</span>
+        <span class="s0">private </span><span class="s1">TextView txtTanggalRequest</span><span class="s0">, </span><span class="s1">txtPembelianToken</span><span class="s0">, </span><span class="s1">txtJumlahToken</span><span class="s0">, </span><span class="s1">txtMetodePembayaran</span><span class="s0">;</span>
+
+        <span class="s0">public </span><span class="s1">TransaksiViewHolder(@NonNull View itemView) {</span>
+            <span class="s0">super</span><span class="s1">(itemView)</span><span class="s0">;</span>
+            <span class="s1">txtTanggalRequest = itemView.findViewById(R.id.texttgl)</span><span class="s0">;</span>
+            <span class="s1">txtPembelianToken = itemView.findViewById(R.id.textbeli)</span><span class="s0">;</span>
+            <span class="s1">txtJumlahToken = itemView.findViewById(R.id.textjml)</span><span class="s0">;</span>
+            <span class="s1">txtMetodePembayaran = itemView.findViewById(R.id.textmtd)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s0">public void </span><span class="s1">bind(Transaksi transaksi) {</span>
+            <span class="s1">txtTanggalRequest.setText(transaksi.getCurrentDate())</span><span class="s0">;</span>
+            <span class="s1">txtPembelianToken.setText(transaksi.getPembelianToken())</span><span class="s0">;</span>
+            <span class="s1">txtJumlahToken.setText(transaksi.getJumlahToken())</span><span class="s0">;</span>
+            <span class="s1">txtMetodePembayaran.setText(transaksi.getMetodePembayaran())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

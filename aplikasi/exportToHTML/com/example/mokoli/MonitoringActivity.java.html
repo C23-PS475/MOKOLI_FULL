@@ -1,0 +1,404 @@
+<html>
+<head>
+<title>MonitoringActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MonitoringActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.util.Log</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ProgressBar</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.charts.BarChart</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.charts.LineChart</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.components.Description</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.components.XAxis</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.components.YAxis</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.data.BarData</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.data.BarDataSet</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.data.BarEntry</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.data.Entry</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.data.LineData</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.data.LineDataSet</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.github.mikephil.charting.formatter.IndexAxisValueFormatter</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnFailureListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnSuccessListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DataSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseError</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.ValueEventListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.annotations.Nullable</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.EventListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestore</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestoreException</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.text.SimpleDateFormat</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Collections</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Comparator</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Date</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.HashMap</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.List</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Map</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.concurrent.CountDownLatch</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">MonitoringActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+    <span class="s0">private </span><span class="s1">LineChart lineChart</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">ProgressBar progressBar</span><span class="s0">;</span>
+    <span class="s1">TextView total</span><span class="s0">;</span>
+    <span class="s1">BarChart barChart</span><span class="s0">;</span>
+
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_monitoring)</span><span class="s0">;</span>
+
+        <span class="s1">lineChart = findViewById(R.id.chart)</span><span class="s0">;</span>
+        <span class="s1">progressBar = findViewById(R.id.progress_bar)</span><span class="s0">;</span>
+        <span class="s1">total = findViewById(R.id.sisaKWH)</span><span class="s0">;</span>
+        <span class="s1">barChart = findViewById(R.id.bar)</span><span class="s0">;</span>
+
+
+        <span class="s2">//SisaKWH//</span>
+        <span class="s1">FirebaseAuth auth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">FirebaseUser user = auth.getCurrentUser()</span><span class="s0">;</span>
+
+        <span class="s0">if </span><span class="s1">(user != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">String uid = user.getUid()</span><span class="s0">;</span>
+
+            <span class="s2">// Mengambil nilai noKamar dari Firestore</span>
+            <span class="s1">FirebaseFirestore db = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+            <span class="s1">DocumentReference docRef = db.collection(</span><span class="s3">&quot;users&quot;</span><span class="s1">).document(uid)</span><span class="s0">;</span>
+
+            <span class="s1">docRef.get().addOnSuccessListener(</span><span class="s0">new </span><span class="s1">OnSuccessListener&lt;DocumentSnapshot&gt;() {</span>
+                <span class="s1">@Override</span>
+                <span class="s0">public void </span><span class="s1">onSuccess(DocumentSnapshot documentSnapshot) {</span>
+                    <span class="s0">if </span><span class="s1">(documentSnapshot.exists()) {</span>
+                        <span class="s1">String noKamar = documentSnapshot.getString(</span><span class="s3">&quot;noKamar&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+                        <span class="s2">// Lanjutkan dengan menggunakan nilai noKamar untuk mengatur DatabaseReference</span>
+                        <span class="s1">setupFirebaseListenerBasedOnNoKamar(noKamar)</span><span class="s0">;</span>
+                    <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                        <span class="s1">Log.d(</span><span class="s3">&quot;YourActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;No such document&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}).addOnFailureListener(</span><span class="s0">new </span><span class="s1">OnFailureListener() {</span>
+                <span class="s1">@Override</span>
+                <span class="s0">public void </span><span class="s1">onFailure(@NonNull Exception e) {</span>
+                    <span class="s1">Log.e(</span><span class="s3">&quot;YourActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;Error getting document&quot;</span><span class="s0">, </span><span class="s1">e)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+
+        <span class="s2">//LineData//</span>
+
+        <span class="s2">// Ambil referensi ke koleksi SensorData untuk tanggal hari ini</span>
+        <span class="s1">SimpleDateFormat dateFormat = </span><span class="s0">new </span><span class="s1">SimpleDateFormat(</span><span class="s3">&quot;dd-MM-yyyy&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">String currentDate = dateFormat.format(</span><span class="s0">new </span><span class="s1">Date())</span><span class="s0">;</span>
+        <span class="s1">FirebaseFirestore db = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+        <span class="s1">db.collection(</span><span class="s3">&quot;SensorData&quot;</span><span class="s1">).document(currentDate)</span>
+                <span class="s1">.addSnapshotListener(</span><span class="s0">new </span><span class="s1">EventListener&lt;DocumentSnapshot&gt;() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onEvent(@Nullable DocumentSnapshot documentSnapshot</span><span class="s0">, </span><span class="s1">@Nullable FirebaseFirestoreException e) {</span>
+                        <span class="s0">if </span><span class="s1">(e != </span><span class="s0">null</span><span class="s1">) {</span>
+                            <span class="s1">Log.e(</span><span class="s3">&quot;TAG&quot;</span><span class="s0">, </span><span class="s3">&quot;Listen failed: &quot; </span><span class="s1">+ e)</span><span class="s0">;</span>
+                            <span class="s0">return;</span>
+                        <span class="s1">}</span>
+
+                        <span class="s0">if </span><span class="s1">(documentSnapshot != </span><span class="s0">null </span><span class="s1">&amp;&amp; documentSnapshot.exists()) {</span>
+                            <span class="s1">progressBar.setVisibility(View.VISIBLE)</span><span class="s0">;  </span><span class="s2">// Tampilkan progress bar saat data dimuat ulang</span>
+
+                            <span class="s1">ArrayList&lt;Float&gt; energyList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+                            <span class="s1">ArrayList&lt;String&gt; timestampList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+
+                            <span class="s2">// Loop melalui data untuk mengambil nilai energi dan timestamp</span>
+                            <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; data = documentSnapshot.getData()</span><span class="s0">;</span>
+                            <span class="s0">if </span><span class="s1">(data != </span><span class="s0">null</span><span class="s1">) {</span>
+                                <span class="s2">// Sort data berdasarkan timestamp jika diperlukan</span>
+                                <span class="s1">List&lt;Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Object&gt;&gt; sortedEntries = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;(data.entrySet())</span><span class="s0">;</span>
+                                <span class="s1">Collections.sort(sortedEntries</span><span class="s0">, new </span><span class="s1">Comparator&lt;Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Object&gt;&gt;() {</span>
+                                    <span class="s1">@Override</span>
+                                    <span class="s0">public int </span><span class="s1">compare(Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; entry1</span><span class="s0">, </span><span class="s1">Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; entry2) {</span>
+                                        <span class="s2">// Urutkan berdasarkan key (timestamp)</span>
+                                        <span class="s0">return </span><span class="s1">entry1.getKey().compareTo(entry2.getKey())</span><span class="s0">;</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">})</span><span class="s0">;</span>
+
+                                <span class="s2">// Mengisi list energi dan timestamp dari data yang telah diurutkan</span>
+                                <span class="s0">for </span><span class="s1">(Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; entry : sortedEntries) {</span>
+                                    <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; sensorData = (Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt;) entry.getValue()</span><span class="s0">;</span>
+                                    <span class="s0">if </span><span class="s1">(sensorData != </span><span class="s0">null</span><span class="s1">) {</span>
+                                        <span class="s1">Double energy = (Double) sensorData.get(</span><span class="s3">&quot;Energy&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                        <span class="s1">String timestamp = (String) sensorData.get(</span><span class="s3">&quot;Timestamp&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                        <span class="s0">if </span><span class="s1">(energy != </span><span class="s0">null </span><span class="s1">&amp;&amp; timestamp != </span><span class="s0">null</span><span class="s1">) {</span>
+                                            <span class="s1">energyList.add(energy.floatValue())</span><span class="s0">;</span>
+                                            <span class="s1">timestampList.add(timestamp)</span><span class="s0">;</span>
+                                        <span class="s1">}</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">}</span>
+
+                                <span class="s2">// Atur data ke dalam format yang dapat digunakan oleh grafik</span>
+                                <span class="s1">ArrayList&lt;Entry&gt; entries = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+                                <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s0">; </span><span class="s1">i &lt; energyList.size()</span><span class="s0">; </span><span class="s1">i++) {</span>
+                                    <span class="s1">entries.add(</span><span class="s0">new </span><span class="s1">Entry(i</span><span class="s0">, </span><span class="s1">energyList.get(i)))</span><span class="s0">;</span>
+                                <span class="s1">}</span>
+
+                                <span class="s2">// Membuat set data untuk grafik garis</span>
+                                <span class="s1">LineDataSet dataSet = </span><span class="s0">new </span><span class="s1">LineDataSet(entries</span><span class="s0">, </span><span class="s3">&quot;Konsumsi Energy&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                <span class="s1">dataSet.setColor(getResources().getColor(R.color.blue))</span><span class="s0">;  </span><span class="s2">// Ganti &quot;dark_blue&quot; dengan warna yang diinginkan</span>
+
+                                <span class="s2">// Set line thickness</span>
+                                <span class="s1">dataSet.setLineWidth(</span><span class="s4">2f</span><span class="s1">)</span><span class="s0">;</span>
+                                <span class="s1">LineData lineData = </span><span class="s0">new </span><span class="s1">LineData(dataSet)</span><span class="s0">;</span>
+
+                                <span class="s2">// Atur data ke grafik</span>
+                                <span class="s1">lineChart.setData(lineData)</span><span class="s0">;</span>
+                                <span class="s1">Description description = lineChart.getDescription()</span><span class="s0">;</span>
+                                <span class="s1">description.setEnabled(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+
+                                <span class="s2">// Mengatur sumbu X untuk menampilkan timestamp</span>
+                                <span class="s1">XAxis xAxis = lineChart.getXAxis()</span><span class="s0">;</span>
+                                <span class="s1">xAxis.setValueFormatter(</span><span class="s0">new </span><span class="s1">MyXAxisValueFormatter(timestampList</span><span class="s0">, </span><span class="s1">energyList))</span><span class="s0">;</span>
+                                <span class="s1">xAxis.setPosition(XAxis.XAxisPosition.BOTTOM)</span><span class="s0">;</span>
+                                <span class="s1">YAxis leftAxis = lineChart.getAxisLeft()</span><span class="s0">;</span>
+                                <span class="s1">leftAxis.setEnabled(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+
+                                <span class="s2">// Refresh grafik</span>
+                                <span class="s1">lineChart.invalidate()</span><span class="s0">;</span>
+
+                                <span class="s1">progressBar.setVisibility(View.GONE)</span><span class="s0">;  </span><span class="s2">// Sembunyikan progress bar setelah grafik dimuat</span>
+                            <span class="s1">}</span>
+                        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                            <span class="s1">Log.d(</span><span class="s3">&quot;TAG&quot;</span><span class="s0">, </span><span class="s3">&quot;Current data: null&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                            <span class="s1">progressBar.setVisibility(View.GONE)</span><span class="s0">;  </span><span class="s2">// Sembunyikan progress bar jika dokumen tidak ada</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+
+
+
+        <span class="s2">//Barchart//</span>
+        <span class="s2">// Ambil referensi ke koleksi SensorData untuk 5 hari terakhir</span>
+        <span class="s1">HashMap&lt;String</span><span class="s0">, </span><span class="s1">Float&gt; dailyEnergyDifferences = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s0">final </span><span class="s1">CountDownLatch latch = </span><span class="s0">new </span><span class="s1">CountDownLatch(</span><span class="s4">5</span><span class="s1">)</span><span class="s0">; </span><span class="s2">// untuk sinkronisasi</span>
+
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">1</span><span class="s0">; </span><span class="s1">i &lt;= </span><span class="s4">5</span><span class="s0">; </span><span class="s1">i++) {</span>
+            <span class="s1">String date = getPastDate(i)</span><span class="s0">; </span><span class="s2">// Fungsi untuk mendapatkan tanggal i hari sebelum hari ini</span>
+            <span class="s1">FirebaseFirestore.getInstance().collection(</span><span class="s3">&quot;SensorData&quot;</span><span class="s1">).document(date)</span>
+                    <span class="s1">.get()</span>
+                    <span class="s1">.addOnSuccessListener(</span><span class="s0">new </span><span class="s1">OnSuccessListener&lt;DocumentSnapshot&gt;() {</span>
+                        <span class="s1">@Override</span>
+                        <span class="s0">public void </span><span class="s1">onSuccess(DocumentSnapshot documentSnapshot) {</span>
+                            <span class="s0">if </span><span class="s1">(documentSnapshot.exists()) {</span>
+                                <span class="s1">List&lt;Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt;&gt; dataList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+                                <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; data = documentSnapshot.getData()</span><span class="s0">;</span>
+                                <span class="s0">if </span><span class="s1">(data != </span><span class="s0">null</span><span class="s1">) {</span>
+                                    <span class="s2">// Kumpulkan semua entri data dalam list</span>
+                                    <span class="s0">for </span><span class="s1">(Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; entry : data.entrySet()) {</span>
+                                        <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; sensorData = (Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt;) entry.getValue()</span><span class="s0">;</span>
+                                        <span class="s0">if </span><span class="s1">(sensorData != </span><span class="s0">null</span><span class="s1">) {</span>
+                                            <span class="s1">dataList.add(sensorData)</span><span class="s0">;</span>
+                                        <span class="s1">}</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">}</span>
+
+                                <span class="s2">// Urutkan dataList berdasarkan Timestamp</span>
+                                <span class="s1">dataList.sort(</span><span class="s0">new </span><span class="s1">Comparator&lt;Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt;&gt;() {</span>
+                                    <span class="s1">@Override</span>
+                                    <span class="s0">public int </span><span class="s1">compare(Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; o1</span><span class="s0">, </span><span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; o2) {</span>
+                                        <span class="s1">String timestamp1 = (String) o1.get(</span><span class="s3">&quot;Timestamp&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                        <span class="s1">String timestamp2 = (String) o2.get(</span><span class="s3">&quot;Timestamp&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                        <span class="s0">return </span><span class="s1">timestamp1.compareTo(timestamp2)</span><span class="s0">;</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">})</span><span class="s0">;</span>
+
+                                <span class="s0">if </span><span class="s1">(!dataList.isEmpty()) {</span>
+                                    <span class="s2">// Ambil nilai energi pertama dan terakhir dari data yang telah diurutkan</span>
+                                    <span class="s0">float </span><span class="s1">firstEnergy = ((Number) dataList.get(</span><span class="s4">0</span><span class="s1">).get(</span><span class="s3">&quot;Energy&quot;</span><span class="s1">)).floatValue()</span><span class="s0">;</span>
+                                    <span class="s0">float </span><span class="s1">lastEnergy = ((Number) dataList.get(dataList.size() - </span><span class="s4">1</span><span class="s1">).get(</span><span class="s3">&quot;Energy&quot;</span><span class="s1">)).floatValue()</span><span class="s0">;</span>
+
+                                    <span class="s2">// Hitung selisih energi</span>
+                                    <span class="s0">float </span><span class="s1">energyDifference = lastEnergy - firstEnergy</span><span class="s0">;</span>
+                                    <span class="s1">dailyEnergyDifferences.put(date</span><span class="s0">, </span><span class="s1">energyDifference)</span><span class="s0">;</span>
+
+                                    <span class="s2">// Tambahkan log untuk menampilkan selisih energi</span>
+                                    <span class="s1">Log.d(</span><span class="s3">&quot;EnergyDifference&quot;</span><span class="s0">, </span><span class="s3">&quot;Date: &quot; </span><span class="s1">+ date + </span><span class="s3">&quot;, Energy Difference: &quot; </span><span class="s1">+ energyDifference)</span><span class="s0">;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+                            <span class="s1">latch.countDown()</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">})</span>
+                    <span class="s1">.addOnFailureListener(</span><span class="s0">new </span><span class="s1">OnFailureListener() {</span>
+                        <span class="s1">@Override</span>
+                        <span class="s0">public void </span><span class="s1">onFailure(@NonNull Exception e) {</span>
+                            <span class="s1">Log.e(</span><span class="s3">&quot;TAG&quot;</span><span class="s0">, </span><span class="s3">&quot;Error getting documents: &quot; </span><span class="s1">+ e.getMessage())</span><span class="s0">;</span>
+                            <span class="s1">progressBar.setVisibility(View.GONE)</span><span class="s0">;</span>
+                            <span class="s1">latch.countDown()</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+
+        <span class="s2">// Tunggu semua data harian diambil sebelum menampilkan diagram batang</span>
+        <span class="s0">new </span><span class="s1">Thread(</span><span class="s0">new </span><span class="s1">Runnable() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">run() {</span>
+                <span class="s0">try </span><span class="s1">{</span>
+                    <span class="s1">latch.await()</span><span class="s0">; </span><span class="s2">// Tunggu hingga latch menjadi 0</span>
+                <span class="s1">} </span><span class="s0">catch </span><span class="s1">(InterruptedException e) {</span>
+                    <span class="s1">e.printStackTrace()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+
+                <span class="s1">runOnUiThread(</span><span class="s0">new </span><span class="s1">Runnable() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">run() {</span>
+                        <span class="s1">showBarChart(dailyEnergyDifferences)</span><span class="s0">; </span><span class="s2">// Tampilkan diagram batang</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}).start()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">setupFirebaseListenerBasedOnNoKamar(String noKamar) {</span>
+        <span class="s1">DatabaseReference mRef</span><span class="s0">;</span>
+
+        <span class="s0">switch </span><span class="s1">(noKamar) {</span>
+            <span class="s0">case </span><span class="s3">&quot;01&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;SensorData&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;02&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor2&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;03&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor3&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;04&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor4&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;05&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor5&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;06&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor6&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;07&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor7&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;08&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor8&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;09&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor9&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">case </span><span class="s3">&quot;10&quot;</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;Sensor10&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">default</span><span class="s1">:</span>
+                <span class="s1">mRef = FirebaseDatabase.getInstance().getReference().child(</span><span class="s3">&quot;SensorData&quot;</span><span class="s1">)</span><span class="s0">; </span><span class="s2">// Default fallback</span>
+                <span class="s0">break;</span>
+        <span class="s1">}</span>
+
+        <span class="s1">mRef.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot dataSnapshot) {</span>
+                <span class="s0">if </span><span class="s1">(dataSnapshot.exists()) {</span>
+                    <span class="s2">// Ambil nilai energi dan token dari dataSnapshot</span>
+                    <span class="s1">Double energyValue = dataSnapshot.child(</span><span class="s3">&quot;Energy&quot;</span><span class="s1">).getValue(Double.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">Double tokenValue = dataSnapshot.child(</span><span class="s3">&quot;Token&quot;</span><span class="s1">).getValue(Double.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+
+                    <span class="s0">if </span><span class="s1">(energyValue != </span><span class="s0">null </span><span class="s1">&amp;&amp; tokenValue != </span><span class="s0">null</span><span class="s1">) {</span>
+                        <span class="s2">// Hitung sisa energi (misalnya)</span>
+                        <span class="s1">Double remainingEnergy = tokenValue - energyValue</span><span class="s0">;</span>
+                        <span class="s2">// Tampilkan nilai remainingEnergy di TextView</span>
+                        <span class="s1">total.setText(String.valueOf(remainingEnergy))</span><span class="s0">;</span>
+                    <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                        <span class="s1">total.setText(</span><span class="s3">&quot;No Data&quot;</span><span class="s1">)</span><span class="s0">; </span><span class="s2">// Handle jika data tidak ada atau tidak lengkap</span>
+                    <span class="s1">}</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">total.setText(</span><span class="s3">&quot;No Data&quot;</span><span class="s1">)</span><span class="s0">; </span><span class="s2">// Handle jika snapshot tidak ada</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError databaseError) {</span>
+                <span class="s1">Log.e(</span><span class="s3">&quot;MonitoringActivity&quot;</span><span class="s0">, </span><span class="s3">&quot;Failed to read value.&quot;</span><span class="s0">, </span><span class="s1">databaseError.toException())</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">private void </span><span class="s1">showBarChart(HashMap&lt;String</span><span class="s0">, </span><span class="s1">Float&gt; dailyEnergyConsumption) {</span>
+        <span class="s1">ArrayList&lt;BarEntry&gt; entries = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">ArrayList&lt;String&gt; dates = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+
+        <span class="s2">// Mengurutkan HashMap berdasarkan tanggal secara terbalik</span>
+        <span class="s1">ArrayList&lt;Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Float&gt;&gt; sortedEntries = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;(dailyEnergyConsumption.entrySet())</span><span class="s0">;</span>
+        <span class="s1">Collections.sort(sortedEntries</span><span class="s0">, new </span><span class="s1">Comparator&lt;Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Float&gt;&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public int </span><span class="s1">compare(Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Float&gt; entry1</span><span class="s0">, </span><span class="s1">Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Float&gt; entry2) {</span>
+                <span class="s0">return </span><span class="s1">entry2.getKey().compareTo(entry1.getKey())</span><span class="s0">; </span><span class="s2">// Urutkan dari yang terbesar ke yang terkecil</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s2">// Iterasi melalui sortedEntries untuk mengisi entries dan dates</span>
+        <span class="s0">int </span><span class="s1">index = </span><span class="s4">0</span><span class="s0">;</span>
+        <span class="s0">for </span><span class="s1">(Map.Entry&lt;String</span><span class="s0">, </span><span class="s1">Float&gt; entry : sortedEntries) {</span>
+            <span class="s1">String date = entry.getKey()</span><span class="s0">;</span>
+            <span class="s1">Float energyDifference = entry.getValue()</span><span class="s0">;</span>
+            <span class="s1">dates.add(date)</span><span class="s0">;</span>
+            <span class="s1">entries.add(</span><span class="s0">new </span><span class="s1">BarEntry(index++</span><span class="s0">, </span><span class="s1">energyDifference))</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+        <span class="s1">BarDataSet dataSet = </span><span class="s0">new </span><span class="s1">BarDataSet(entries</span><span class="s0">, </span><span class="s3">&quot;Pemakaian Energi Dalam 5 Hari Terakhir&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">BarData barData = </span><span class="s0">new </span><span class="s1">BarData(dataSet)</span><span class="s0">;</span>
+        <span class="s1">dataSet.setColor(getResources().getColor(R.color.blue))</span><span class="s0">;</span>
+
+        <span class="s2">// Atur label tanggal pada sumbu X</span>
+        <span class="s1">XAxis xAxis = barChart.getXAxis()</span><span class="s0">;</span>
+        <span class="s1">xAxis.setValueFormatter(</span><span class="s0">new </span><span class="s1">IndexAxisValueFormatter(dates))</span><span class="s0">; </span><span class="s2">// Atur label sesuai dengan tanggal</span>
+        <span class="s1">xAxis.setPosition(XAxis.XAxisPosition.BOTTOM)</span><span class="s0">;</span>
+        <span class="s1">xAxis.setGranularity(</span><span class="s4">1f</span><span class="s1">)</span><span class="s0">; </span><span class="s2">// Penting untuk memastikan setiap tanggal ditampilkan</span>
+        <span class="s1">Description description = barChart.getDescription()</span><span class="s0">;</span>
+        <span class="s1">description.setEnabled(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">barChart.setData(barData)</span><span class="s0">;</span>
+        <span class="s1">barChart.invalidate()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private </span><span class="s1">String getPastDate(</span><span class="s0">int </span><span class="s1">days) {</span>
+        <span class="s1">SimpleDateFormat dateFormat = </span><span class="s0">new </span><span class="s1">SimpleDateFormat(</span><span class="s3">&quot;dd-MM-yyyy&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s0">long </span><span class="s1">currentTime = System.currentTimeMillis()</span><span class="s0">;</span>
+        <span class="s0">long </span><span class="s1">pastTime = currentTime - (days * </span><span class="s4">24 </span><span class="s1">* </span><span class="s4">60 </span><span class="s1">* </span><span class="s4">60 </span><span class="s1">* </span><span class="s4">1000</span><span class="s1">)</span><span class="s0">; </span><span class="s2">// Mengurangi waktu sebanyak 'days' hari</span>
+        <span class="s1">Date pastDate = </span><span class="s0">new </span><span class="s1">Date(pastTime)</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">dateFormat.format(pastDate)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>UserAdapter.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+UserAdapter.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.content.Context</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.List</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">UserAdapter </span><span class="s0">extends </span><span class="s1">RecyclerView.Adapter&lt;UserAdapter.UserViewHolder&gt; {</span>
+    <span class="s0">private </span><span class="s1">List&lt;User&gt; userList</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">Context context</span><span class="s0">;</span>
+
+    <span class="s0">public </span><span class="s1">UserAdapter(List&lt;User&gt; userList</span><span class="s0">, </span><span class="s1">Context context) {</span>
+        <span class="s0">this</span><span class="s1">.userList = userList</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.context = context</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@NonNull</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent</span><span class="s0">, int </span><span class="s1">viewType) {</span>
+        <span class="s1">View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_monitoring</span><span class="s0">, </span><span class="s1">parent</span><span class="s0">, false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s0">return new </span><span class="s1">UserViewHolder(view)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onBindViewHolder(@NonNull UserViewHolder holder</span><span class="s0">, int </span><span class="s1">position) {</span>
+        <span class="s1">User user = userList.get(position)</span><span class="s0">;</span>
+        <span class="s1">holder.bind(user)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public int </span><span class="s1">getItemCount() {</span>
+        <span class="s0">return </span><span class="s1">userList.size()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public class </span><span class="s1">UserViewHolder </span><span class="s0">extends </span><span class="s1">RecyclerView.ViewHolder {</span>
+        <span class="s1">TextView noKamarTextView</span><span class="s0">, </span><span class="s1">namaTextView</span><span class="s0">, </span><span class="s1">kwhTextView</span><span class="s0">;</span>
+
+        <span class="s0">public </span><span class="s1">UserViewHolder(@NonNull View itemView) {</span>
+            <span class="s0">super</span><span class="s1">(itemView)</span><span class="s0">;</span>
+            <span class="s1">noKamarTextView = itemView.findViewById(R.id.nokamar)</span><span class="s0">;</span>
+            <span class="s1">namaTextView = itemView.findViewById(R.id.nama)</span><span class="s0">;</span>
+            <span class="s1">kwhTextView = itemView.findViewById(R.id.KWH)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">public void </span><span class="s1">bind(User user) {</span>
+            <span class="s1">noKamarTextView.setText(user.getNoKamar())</span><span class="s0">;</span>
+            <span class="s1">namaTextView.setText(user.getFullName())</span><span class="s0">;</span>
+            <span class="s1">kwhTextView.setText(String.valueOf(user.getKwh()))</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

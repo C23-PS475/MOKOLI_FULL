@@ -1,0 +1,314 @@
+<html>
+<head>
+<title>RequestTokenAdapter.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+RequestTokenAdapter.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.app.AlertDialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Context</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.bumptech.glide.Glide</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DataSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseError</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseException</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.ValueEventListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestore</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.QueryDocumentSnapshot</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Map</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">RequestTokenAdapter </span><span class="s0">extends </span><span class="s1">RecyclerView.Adapter&lt;RequestTokenAdapter.RequestTokenViewHolder&gt; {</span>
+    <span class="s0">private </span><span class="s1">ArrayList&lt;RequestToken&gt; requestTokens</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">FirebaseFirestore firestore</span><span class="s0">;</span>
+
+    <span class="s0">public </span><span class="s1">RequestTokenAdapter(ArrayList&lt;RequestToken&gt; requestTokens) {</span>
+        <span class="s0">this</span><span class="s1">.requestTokens = requestTokens</span><span class="s0">;</span>
+        <span class="s1">firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@NonNull</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">RequestTokenViewHolder onCreateViewHolder(@NonNull ViewGroup parent</span><span class="s0">, int </span><span class="s1">viewType) {</span>
+        <span class="s1">View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaksi</span><span class="s0">, </span><span class="s1">parent</span><span class="s0">, false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s0">return new </span><span class="s1">RequestTokenViewHolder(view)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onBindViewHolder(@NonNull RequestTokenViewHolder holder</span><span class="s0">, int </span><span class="s1">position) {</span>
+        <span class="s1">RequestToken requestToken = requestTokens.get(position)</span><span class="s0">;</span>
+        <span class="s1">holder.bind(requestToken)</span><span class="s0">;</span>
+        <span class="s1">holder.itemView.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s2">// Tampilkan dialog alert</span>
+                <span class="s1">showDialog(v.getContext()</span><span class="s0">, </span><span class="s1">requestToken)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">showDialog(Context context</span><span class="s0">, </span><span class="s1">RequestToken requestToken) {</span>
+        <span class="s1">AlertDialog.Builder builder = </span><span class="s0">new </span><span class="s1">AlertDialog.Builder(context)</span><span class="s0">;</span>
+        <span class="s1">LayoutInflater inflater = LayoutInflater.from(context)</span><span class="s0">;</span>
+        <span class="s1">View dialogView = inflater.inflate(R.layout.activity_approve</span><span class="s0">, null</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">TextView namaTextView = dialogView.findViewById(R.id.nama)</span><span class="s0">;</span>
+        <span class="s1">TextView pembelianTextView = dialogView.findViewById(R.id.trpembelian)</span><span class="s0">;</span>
+        <span class="s1">TextView tanggalTextView = dialogView.findViewById(R.id.trtgl)</span><span class="s0">;</span>
+        <span class="s1">TextView jumlahTextView = dialogView.findViewById(R.id.trjumlah)</span><span class="s0">;</span>
+        <span class="s1">TextView metodeTextView = dialogView.findViewById(R.id.trmetode)</span><span class="s0">;</span>
+        <span class="s1">TextView buktiTextView = dialogView.findViewById(R.id.ttbukti)</span><span class="s0">;</span>
+        <span class="s1">ImageView buktiImageView = dialogView.findViewById(R.id.buktiImageView)</span><span class="s0">;</span>
+
+        <span class="s2">// Set data dari requestToken ke TextViews</span>
+        <span class="s1">namaTextView.setText(requestToken.getFullname())</span><span class="s0">;</span>
+        <span class="s1">pembelianTextView.setText(requestToken.getPembelianToken())</span><span class="s0">;</span>
+        <span class="s1">tanggalTextView.setText(requestToken.getCurrentDate())</span><span class="s0">;</span>
+        <span class="s1">jumlahTextView.setText(requestToken.getJumlahToken())</span><span class="s0">;</span>
+        <span class="s1">metodeTextView.setText(requestToken.getMetodePembayaran())</span><span class="s0">;</span>
+        <span class="s2">// Tampilkan gambar dengan URL menggunakan Glide atau Picasso</span>
+        <span class="s1">Glide.with(context).load(requestToken.getBuktiPembayaran()).into(buktiImageView)</span><span class="s0">;</span>
+
+        <span class="s1">builder.setView(dialogView)</span><span class="s0">;</span>
+        <span class="s1">AlertDialog dialog = builder.create()</span><span class="s0">;</span>
+        <span class="s1">dialog.show()</span><span class="s0">;</span>
+
+        <span class="s2">// Jika tombol &quot;Setuju&quot; diklik</span>
+        <span class="s1">dialogView.findViewById(R.id.btnSetuju).setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s2">// Simpan data transaksi ke Firestore</span>
+                <span class="s1">saveToUserTransactions(requestToken)</span><span class="s0">;</span>
+
+                <span class="s2">// Salin data transaksi ke koleksi &quot;riwayat&quot;</span>
+                <span class="s1">copyTransactionsToHistory(requestToken)</span><span class="s0">;</span>
+
+                <span class="s2">// Hapus data dari request_token</span>
+                <span class="s1">deleteRequestToken(requestToken)</span><span class="s0">;</span>
+
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+
+        <span class="s2">// Jika tombol &quot;Tolak&quot; diklik</span>
+        <span class="s1">dialogView.findViewById(R.id.btnTolak).setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s2">// Tolak permintaan token</span>
+                <span class="s1">rejectRequestToken(requestToken)</span><span class="s0">;</span>
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">rejectRequestToken(RequestToken requestToken) {</span>
+        <span class="s1">String fullname = requestToken.getFullname()</span><span class="s0">;</span>
+        <span class="s2">// Dapatkan referensi ke Firestore</span>
+        <span class="s1">FirebaseFirestore firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+        <span class="s2">// Buat query untuk mencari dokumen dengan fullname yang sesuai</span>
+        <span class="s1">firestore.collection(</span><span class="s3">&quot;request_token&quot;</span><span class="s1">)</span>
+                <span class="s1">.whereEqualTo(</span><span class="s3">&quot;fullname&quot;</span><span class="s0">, </span><span class="s1">fullname)</span>
+                <span class="s1">.get()</span>
+                <span class="s1">.addOnSuccessListener(queryDocumentSnapshots -&gt; {</span>
+                    <span class="s0">for </span><span class="s1">(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {</span>
+                        <span class="s2">// Hapus dokumen yang sesuai</span>
+                        <span class="s1">documentSnapshot.getReference().delete()</span>
+                                <span class="s1">.addOnSuccessListener(aVoid -&gt; {</span>
+                                    <span class="s2">// Dokumen berhasil dihapus</span>
+                                    <span class="s2">// Hapus item dari ArrayList</span>
+                                    <span class="s1">requestTokens.remove(requestToken)</span><span class="s0">;</span>
+                                    <span class="s2">// Memberi tahu RecyclerView bahwa dataset telah berubah</span>
+                                    <span class="s1">notifyDataSetChanged()</span><span class="s0">;</span>
+                                <span class="s1">})</span>
+                                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                                    <span class="s2">// Gagal menghapus dokumen</span>
+                                <span class="s1">})</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span>
+                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                    <span class="s2">// Gagal mengambil dokumen</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">saveToUserTransactions(RequestToken requestToken) {</span>
+        <span class="s1">String userId = requestToken.getUserId()</span><span class="s0">; </span><span class="s2">// Dapatkan userId dari requestToken</span>
+
+        <span class="s2">// Dapatkan referensi ke Firestore</span>
+        <span class="s1">FirebaseFirestore firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+
+        <span class="s2">// Dapatkan collection &quot;users&quot; -&gt; &quot;userId&quot; -&gt; &quot;transaksi&quot;</span>
+        <span class="s1">firestore.collection(</span><span class="s3">&quot;users&quot;</span><span class="s1">).document(userId).collection(</span><span class="s3">&quot;transaksi&quot;</span><span class="s1">)</span>
+                <span class="s1">.add(requestToken.toMap())</span>
+                <span class="s1">.addOnSuccessListener(documentReference -&gt; {</span>
+                    <span class="s2">// Data transaksi berhasil disimpan di koleksi &quot;transaksi</span>
+
+                    <span class="s2">// Set data jumlahToken ke Realtime Database</span>
+                    <span class="s1">setJumlahTokenToSensorData(requestToken)</span><span class="s0">;</span>
+                <span class="s1">})</span>
+                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                    <span class="s2">// Gagal menyimpan data transaksi di koleksi &quot;transaksi&quot;</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">setJumlahTokenToSensorData(RequestToken requestToken) {</span>
+        <span class="s1">String jumlahTokenString = requestToken.getJumlahToken()</span><span class="s0">;</span>
+        <span class="s2">// Ubah koma menjadi titik</span>
+        <span class="s1">jumlahTokenString = jumlahTokenString.replace(</span><span class="s3">&quot;,&quot;</span><span class="s0">, </span><span class="s3">&quot;.&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s2">// Konversi jumlahTokenString ke Double</span>
+            <span class="s1">Double jumlahTokenDouble = Double.parseDouble(jumlahTokenString)</span><span class="s0">;</span>
+
+            <span class="s2">// Dapatkan referensi ke Firebase Realtime Database</span>
+            <span class="s1">FirebaseDatabase database = FirebaseDatabase.getInstance()</span><span class="s0">;</span>
+            <span class="s1">DatabaseReference myRef = database.getReference(</span><span class="s3">&quot;SensorData/Token&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+            <span class="s2">// Dapatkan nilai Batasan sebelumnya dari Firebase Realtime Database</span>
+            <span class="s1">myRef.addListenerForSingleValueEvent(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+                <span class="s1">@Override</span>
+                <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot dataSnapshot) {</span>
+                    <span class="s0">if </span><span class="s1">(dataSnapshot.exists()) {</span>
+                        <span class="s0">try </span><span class="s1">{</span>
+                            <span class="s2">// Ambil nilai Batasan sebelumnya dari Firebase Realtime Database</span>
+                            <span class="s1">Double previousValue = dataSnapshot.getValue(Double.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+
+                            <span class="s2">// Tambahkan nilai jumlahTokenDouble ke nilai sebelumnya</span>
+                            <span class="s1">Double newValue = previousValue + jumlahTokenDouble</span><span class="s0">;</span>
+
+                            <span class="s2">// Set nilai baru ke Firebase Realtime Database</span>
+                            <span class="s1">myRef.setValue(newValue)</span>
+                                    <span class="s1">.addOnSuccessListener(aVoid -&gt; {</span>
+                                        <span class="s2">// Data berhasil disimpan di Firebase Realtime Database</span>
+                                    <span class="s1">})</span>
+                                    <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                                        <span class="s2">// Gagal menyimpan data di Firebase Realtime Database</span>
+                                    <span class="s1">})</span><span class="s0">;</span>
+                        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(DatabaseException e) {</span>
+                            <span class="s1">e.printStackTrace()</span><span class="s0">;</span>
+                            <span class="s2">// Penanganan jika terjadi kesalahan saat mengambil nilai dari Firebase Realtime Database</span>
+                        <span class="s1">}</span>
+                    <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                        <span class="s2">// Kasus di mana nilai Batasan sebelumnya tidak ada di Firebase Realtime Database</span>
+                        <span class="s2">// Tindakan yang sesuai dapat diambil, misalnya, menambahkan nilai awal</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+
+                <span class="s1">@Override</span>
+                <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError databaseError) {</span>
+                    <span class="s2">// Penanganan jika ada pembatalan permintaan</span>
+                <span class="s1">}</span>
+            <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(NumberFormatException e) {</span>
+            <span class="s1">e.printStackTrace()</span><span class="s0">;</span>
+            <span class="s2">// Penanganan jika ada kesalahan dalam konversi string ke double</span>
+            <span class="s2">// Misalnya, tampilkan pesan kesalahan atau lakukan tindakan yang sesuai</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">private void </span><span class="s1">copyTransactionsToHistory(RequestToken requestToken) {</span>
+        <span class="s2">// Dapatkan referensi ke Firestore</span>
+        <span class="s1">FirebaseFirestore firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+
+        <span class="s2">// Salin data dari requestToken ke koleksi &quot;riwayat&quot; dengan menyertakan userId</span>
+        <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; transactionData = requestToken.toMap()</span><span class="s0">;</span>
+        <span class="s1">transactionData.put(</span><span class="s3">&quot;userId&quot;</span><span class="s0">, </span><span class="s1">requestToken.getUserId())</span><span class="s0">;</span>
+
+        <span class="s2">// Simpan data ke koleksi &quot;riwayat&quot;</span>
+        <span class="s1">firestore.collection(</span><span class="s3">&quot;riwayat&quot;</span><span class="s1">)</span>
+                <span class="s1">.add(transactionData)</span>
+                <span class="s1">.addOnSuccessListener(documentReference -&gt; {</span>
+                    <span class="s2">// Data berhasil disalin ke koleksi &quot;riwayat&quot;</span>
+                <span class="s1">})</span>
+                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                    <span class="s2">// Gagal menyalin data ke koleksi &quot;riwayat&quot;</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+
+
+    <span class="s0">private void </span><span class="s1">deleteRequestToken(RequestToken requestToken) {</span>
+        <span class="s2">// Dapatkan fullname dari requestToken</span>
+        <span class="s1">String fullname = requestToken.getFullname()</span><span class="s0">;</span>
+        <span class="s2">// Dapatkan referensi ke Firestore</span>
+        <span class="s1">FirebaseFirestore firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+        <span class="s2">// Buat query untuk mencari dokumen dengan fullname yang sesuai</span>
+        <span class="s1">firestore.collection(</span><span class="s3">&quot;request_token&quot;</span><span class="s1">)</span>
+                <span class="s1">.whereEqualTo(</span><span class="s3">&quot;fullname&quot;</span><span class="s0">, </span><span class="s1">fullname)</span>
+                <span class="s1">.get()</span>
+                <span class="s1">.addOnSuccessListener(queryDocumentSnapshots -&gt; {</span>
+                    <span class="s0">for </span><span class="s1">(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {</span>
+                        <span class="s2">// Hapus dokumen yang sesuai</span>
+                        <span class="s1">documentSnapshot.getReference().delete()</span>
+                                <span class="s1">.addOnSuccessListener(aVoid -&gt; {</span>
+                                    <span class="s2">// Dokumen berhasil dihapus</span>
+                                    <span class="s2">// Hapus item dari ArrayList</span>
+                                    <span class="s1">requestTokens.remove(requestToken)</span><span class="s0">;</span>
+                                    <span class="s2">// Memberi tahu RecyclerView bahwa dataset telah berubah</span>
+                                    <span class="s1">notifyDataSetChanged()</span><span class="s0">;</span>
+                                <span class="s1">})</span>
+                                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                                    <span class="s2">// Gagal menghapus dokumen</span>
+                                <span class="s1">})</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span>
+                <span class="s1">.addOnFailureListener(e -&gt; {</span>
+                    <span class="s2">// Gagal mengambil dokumen</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public int </span><span class="s1">getItemCount() {</span>
+        <span class="s0">return </span><span class="s1">requestTokens.size()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public static class </span><span class="s1">RequestTokenViewHolder </span><span class="s0">extends </span><span class="s1">RecyclerView.ViewHolder {</span>
+        <span class="s1">TextView textViewTanggal</span><span class="s0">, </span><span class="s1">textViewPembelianToken</span><span class="s0">, </span><span class="s1">textViewJumlahToken</span><span class="s0">, </span><span class="s1">textViewMetodePembayaran</span><span class="s0">, </span><span class="s1">textViewNama</span><span class="s0">;</span>
+
+        <span class="s0">public </span><span class="s1">RequestTokenViewHolder(@NonNull View itemView) {</span>
+            <span class="s0">super</span><span class="s1">(itemView)</span><span class="s0">;</span>
+            <span class="s1">textViewTanggal = itemView.findViewById(R.id.textTanggal)</span><span class="s0">;</span>
+            <span class="s1">textViewPembelianToken = itemView.findViewById(R.id.textPembelian)</span><span class="s0">;</span>
+            <span class="s1">textViewJumlahToken = itemView.findViewById(R.id.textJumlah)</span><span class="s0">;</span>
+            <span class="s1">textViewMetodePembayaran = itemView.findViewById(R.id.textmetode)</span><span class="s0">;</span>
+            <span class="s1">textViewNama = itemView.findViewById(R.id.textnama)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">public void </span><span class="s1">bind(RequestToken requestToken) {</span>
+            <span class="s1">textViewTanggal.setText(requestToken.getCurrentDate())</span><span class="s0">;</span>
+            <span class="s1">textViewPembelianToken.setText(requestToken.getPembelianToken())</span><span class="s0">;</span>
+            <span class="s1">textViewJumlahToken.setText(requestToken.getJumlahToken())</span><span class="s0">;</span>
+            <span class="s1">textViewMetodePembayaran.setText(requestToken.getMetodePembayaran())</span><span class="s0">;</span>
+            <span class="s1">textViewNama.setText(requestToken.getFullname())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

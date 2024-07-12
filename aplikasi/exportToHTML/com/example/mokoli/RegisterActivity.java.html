@@ -1,0 +1,359 @@
+<html>
+<head>
+<title>RegisterActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #6897bb;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+RegisterActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.annotation.SuppressLint</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.app.AlertDialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.text.TextUtils</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.util.Log</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.AdapterView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.LinearLayout</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Spinner</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnCompleteListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.Task</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.FirebaseApp</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.AuthResult</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestore</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.QuerySnapshot</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.HashMap</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Map</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.regex.Pattern</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">RegisterActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity </span><span class="s0">implements </span><span class="s1">AdapterView.OnItemSelectedListener{</span>
+
+    <span class="s1">EditText nama</span><span class="s0">, </span><span class="s1">email</span><span class="s0">, </span><span class="s1">password</span><span class="s0">;</span>
+    <span class="s1">Spinner tipeSpinner</span><span class="s0">, </span><span class="s1">kamarSpinner</span><span class="s0">;</span>
+
+    <span class="s1">LinearLayout kamar</span><span class="s0">;</span>
+    <span class="s1">Button register</span><span class="s0">;</span>
+    <span class="s1">FirebaseAuth firebaseAuth</span><span class="s0">;</span>
+    <span class="s1">FirebaseFirestore firestore</span><span class="s0">;</span>
+
+    <span class="s1">@SuppressLint(</span><span class="s2">&quot;MissingInflatedId&quot;</span><span class="s1">)</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_register)</span><span class="s0">;</span>
+
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">FirebaseApp.initializeApp(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+
+        <span class="s1">nama = findViewById(R.id.namalengkap)</span><span class="s0">;</span>
+        <span class="s1">email = findViewById(R.id.email)</span><span class="s0">;</span>
+        <span class="s1">password = findViewById(R.id.pass)</span><span class="s0">;</span>
+        <span class="s1">register = findViewById(R.id.btnregister)</span><span class="s0">;</span>
+        <span class="s1">tipeSpinner = findViewById(R.id.tipe)</span><span class="s0">;</span>
+        <span class="s1">kamar =findViewById(R.id.kamarlayout)</span><span class="s0">;</span>
+        <span class="s1">kamarSpinner = findViewById(R.id.kamar)</span><span class="s0">;</span>
+
+        <span class="s1">CustomAdapter adapter = </span><span class="s0">new </span><span class="s1">CustomAdapter(</span><span class="s0">this, </span><span class="s1">getCustomList())</span><span class="s0">;</span>
+        <span class="s1">tipeSpinner.setAdapter(adapter)</span><span class="s0">;</span>
+        <span class="s1">tipeSpinner.setOnItemSelectedListener(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">CustomAdapter kamarAdapter = </span><span class="s0">new </span><span class="s1">CustomAdapter(</span><span class="s0">this, </span><span class="s1">getKamarList())</span><span class="s0">;</span>
+        <span class="s1">kamarSpinner.setAdapter(kamarAdapter)</span><span class="s0">;</span>
+
+        <span class="s1">register.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">String fullName = nama.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">String userEmail = email.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">String userPassword = password.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">String selectedTipe = tipeSpinner.getSelectedItem().toString()</span><span class="s0">;</span>
+                <span class="s1">String selectedKamar = kamarSpinner.getSelectedItem().toString()</span><span class="s0">;</span>
+
+                <span class="s0">if </span><span class="s1">(TextUtils.isEmpty(fullName) || TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(userPassword) || selectedTipe.equals(</span><span class="s2">&quot;Tipe Akun&quot;</span><span class="s1">)) {</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Harap melengkapi data diri&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else if </span><span class="s1">(tipeSpinner.getSelectedItemPosition() == </span><span class="s3">0</span><span class="s1">) {</span>
+                    <span class="s4">// Jika tipeSpinner masih dalam keadaan default</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Harap pilih tipe akun&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s0">if </span><span class="s1">(isValidPassword(userPassword)) {</span>
+                        <span class="s4">// Lanjutkan proses registrasi jika password valid dan tipe akun dipilih dengan benar</span>
+                        <span class="s1">registerUser(fullName</span><span class="s0">, </span><span class="s1">userEmail</span><span class="s0">, </span><span class="s1">userPassword</span><span class="s0">, </span><span class="s1">selectedTipe</span><span class="s0">, </span><span class="s1">selectedKamar)</span><span class="s0">;</span>
+                    <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                        <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Password harus terdiri dari minimal 8 karakter, termasuk huruf besar, huruf kecil, angka, dan simbol.&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_LONG).show()</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private </span><span class="s1">ArrayList&lt;CustomItem&gt; getCustomList() {</span>
+        <span class="s1">ArrayList&lt;CustomItem&gt; customList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s2">&quot;Tipe Akun&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s2">&quot;Pemilik&quot;</span><span class="s0">, </span><span class="s1">android.R.color.black))</span><span class="s0">;</span>
+        <span class="s1">customList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s2">&quot;Penyewa&quot;</span><span class="s0">, </span><span class="s1">android.R.color.black))</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">customList</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private </span><span class="s1">ArrayList&lt;CustomItem&gt; getKamarList() {</span>
+        <span class="s1">ArrayList&lt;CustomItem&gt; kamarList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">kamarList.add(</span><span class="s0">new </span><span class="s1">CustomItem(</span><span class="s2">&quot;No Kamar&quot;</span><span class="s0">, </span><span class="s1">android.R.color.darker_gray))</span><span class="s0">;</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s3">1</span><span class="s0">; </span><span class="s1">i &lt;= </span><span class="s3">10</span><span class="s0">; </span><span class="s1">i++) {</span>
+            <span class="s1">kamarList.add(</span><span class="s0">new </span><span class="s1">CustomItem(String.format(</span><span class="s2">&quot;%02d&quot;</span><span class="s0">, </span><span class="s1">i)</span><span class="s0">, </span><span class="s1">android.R.color.black))</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">kamarList</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onItemSelected(AdapterView&lt;?&gt; adapterView</span><span class="s0">, </span><span class="s1">View view</span><span class="s0">, int </span><span class="s1">position</span><span class="s0">, long </span><span class="s1">id) {</span>
+        <span class="s1">CustomItem selectedItem = (CustomItem) adapterView.getItemAtPosition(position)</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(adapterView.getId() == R.id.tipe) {</span>
+            <span class="s0">if </span><span class="s1">(!selectedItem.getSpinnerItemName().equals(</span><span class="s2">&quot;Tipe Akun&quot;</span><span class="s1">)) {</span>
+                <span class="s0">if</span><span class="s1">(selectedItem.getSpinnerItemName().equals(</span><span class="s2">&quot;Pemilik&quot;</span><span class="s1">)) {</span>
+                    <span class="s1">showDialogForAdminCode()</span><span class="s0">;</span>
+                    <span class="s1">kamar.setVisibility(View.GONE)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else if</span><span class="s1">(selectedItem.getSpinnerItemName().equals(</span><span class="s2">&quot;Penyewa&quot;</span><span class="s1">)) {</span>
+                    <span class="s1">kamar.setVisibility(View.VISIBLE)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s4">// Jika pengguna memilih &quot;Tipe Akun&quot;, atur kembali ke posisi default</span>
+                <span class="s1">tipeSpinner.setSelection(</span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(adapterView.getId() == R.id.kamar) {</span>
+            <span class="s0">if </span><span class="s1">(!selectedItem.getSpinnerItemName().equals(</span><span class="s2">&quot;No Kamar&quot;</span><span class="s1">)) {</span>
+                <span class="s4">// Jika pengguna memilih nomor kamar, lakukan pengecekan kamar</span>
+                <span class="s1">checkKamarAvailability(selectedItem.getSpinnerItemName())</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s4">// Jika pengguna memilih &quot;No Kamar&quot;, atur kembali ke posisi default</span>
+                <span class="s1">kamarSpinner.setSelection(</span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">private void </span><span class="s1">showDialogForAdminCode() {</span>
+        <span class="s1">AlertDialog.Builder builder = </span><span class="s0">new </span><span class="s1">AlertDialog.Builder(RegisterActivity.</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">View view = getLayoutInflater().inflate(R.layout.activity_kode</span><span class="s0">, null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">builder.setView(view)</span><span class="s0">;</span>
+
+        <span class="s0">final </span><span class="s1">EditText kodeAdminEditText = view.findViewById(R.id.kodeBox)</span><span class="s0">;</span>
+        <span class="s1">Button submitButton = view.findViewById(R.id.kodeReset)</span><span class="s0">;</span>
+        <span class="s1">Button cancelButton = view.findViewById(R.id.kodeCancel)</span><span class="s0">;</span>
+
+        <span class="s0">final </span><span class="s1">AlertDialog dialog = builder.create()</span><span class="s0">;</span>
+
+        <span class="s1">submitButton.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">String kodeAdmin = kodeAdminEditText.getText().toString()</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(kodeAdmin.equals(</span><span class="s2">&quot;admin123&quot;</span><span class="s1">)) {</span>
+                    <span class="s1">registerUser(nama.getText().toString()</span><span class="s0">, </span><span class="s1">email.getText().toString()</span><span class="s0">, </span><span class="s1">password.getText().toString()</span><span class="s0">, </span><span class="s2">&quot;Pemilik&quot;</span><span class="s0">, null</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Kode admin tidak valid&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">kamarSpinner.setOnItemSelectedListener(</span><span class="s0">new </span><span class="s1">AdapterView.OnItemSelectedListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onItemSelected(AdapterView&lt;?&gt; parent</span><span class="s0">, </span><span class="s1">View view</span><span class="s0">, int </span><span class="s1">position</span><span class="s0">, long </span><span class="s1">id) {</span>
+                <span class="s1">CustomItem selectedItem = (CustomItem) parent.getItemAtPosition(position)</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(!selectedItem.getSpinnerItemName().equals(</span><span class="s2">&quot;No Kamar&quot;</span><span class="s1">)) {</span>
+                    <span class="s4">// Lakukan pengecekan nomor kamar</span>
+                    <span class="s1">String selectedKamar = selectedItem.getSpinnerItemName()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onNothingSelected(AdapterView&lt;?&gt; parent) {</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">cancelButton.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+                <span class="s1">tipeSpinner.setSelection(</span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">dialog.show()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">checkKamarAvailability(</span><span class="s0">final </span><span class="s1">String selectedKamar) {</span>
+        <span class="s4">// Lakukan pengecekan terpisah untuk setiap nomor kamar</span>
+        <span class="s0">switch </span><span class="s1">(selectedKamar) {</span>
+            <span class="s0">case </span><span class="s2">&quot;01&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;02&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;03&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;04&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;05&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;06&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;07&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;08&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;09&quot;</span><span class="s1">:</span>
+            <span class="s0">case </span><span class="s2">&quot;10&quot;</span><span class="s1">:</span>
+                <span class="s4">// Jika nomor kamar yang dipilih berada dalam rentang yang ditentukan,</span>
+                <span class="s4">// lakukan kueri Firestore untuk memeriksa ketersediaannya</span>
+                <span class="s1">firestore.collection(</span><span class="s2">&quot;users&quot;</span><span class="s1">)</span>
+                        <span class="s1">.whereEqualTo(</span><span class="s2">&quot;noKamar&quot;</span><span class="s0">, </span><span class="s1">selectedKamar)</span>
+                        <span class="s1">.get()</span>
+                        <span class="s1">.addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;QuerySnapshot&gt;() {</span>
+                            <span class="s1">@Override</span>
+                            <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;QuerySnapshot&gt; task) {</span>
+                                <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                                    <span class="s0">if </span><span class="s1">(!task.getResult().isEmpty()) {</span>
+                                        <span class="s4">// Kamar sudah ditempati</span>
+                                        <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Nomor kamar sudah digunakan&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                        <span class="s1">kamarSpinner.setSelection(</span><span class="s3">0</span><span class="s1">)</span><span class="s0">; </span><span class="s4">// Reset spinner</span>
+                                    <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                        <span class="s4">// Kamar tersedia, lanjutkan registrasi</span>
+                                        <span class="s1">registerUser(nama.getText().toString()</span><span class="s0">, </span><span class="s1">email.getText().toString()</span><span class="s0">, </span><span class="s1">password.getText().toString()</span><span class="s0">, </span><span class="s2">&quot;Penyewa&quot;</span><span class="s0">, </span><span class="s1">selectedKamar)</span><span class="s0">;</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                    <span class="s4">// Penanganan kesalahan untuk kueri Firestore</span>
+                                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Error checking kamar availability: &quot; </span><span class="s1">+ task.getException().getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+                        <span class="s1">})</span><span class="s0">;</span>
+                <span class="s0">break;</span>
+            <span class="s0">default</span><span class="s1">:</span>
+                <span class="s4">// Tangani nomor kamar yang tidak valid di sini</span>
+                <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Nomor kamar tidak valid&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">kamarSpinner.setSelection(</span><span class="s3">0</span><span class="s1">)</span><span class="s0">; </span><span class="s4">// Reset spinner</span>
+                <span class="s0">break;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onNothingSelected(AdapterView&lt;?&gt; adapterView) {</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">registerUser(</span><span class="s0">final </span><span class="s1">String fullName</span><span class="s0">, final </span><span class="s1">String userEmail</span><span class="s0">, final </span><span class="s1">String userPassword</span><span class="s0">, final </span><span class="s1">String selectedTipe</span><span class="s0">, final </span><span class="s1">String selectedKamar ) {</span>
+        <span class="s0">if </span><span class="s1">(selectedTipe.equals(</span><span class="s2">&quot;Tipe Akun&quot;</span><span class="s1">)) {</span>
+            <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Pilih tipe akun yang valid&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(selectedTipe.equals(</span><span class="s2">&quot;Penyewa&quot;</span><span class="s1">) &amp;&amp; TextUtils.isEmpty(selectedKamar)) {</span>
+            <span class="s4">// Jika tipe akun adalah &quot;Penyewa&quot; tetapi nomor kamar tidak dipilih</span>
+            <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Pilih nomor kamar&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s4">// Jika tipe akun adalah &quot;Pemilik&quot; atau nomor kamar sudah dipilih untuk &quot;Penyewa&quot;</span>
+            <span class="s1">firebaseAuth.createUserWithEmailAndPassword(userEmail</span><span class="s0">, </span><span class="s1">userPassword)</span>
+                    <span class="s1">.addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;AuthResult&gt;() {</span>
+                        <span class="s1">@Override</span>
+                        <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;AuthResult&gt; task) {</span>
+                            <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                                <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Registered successfully&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_LONG).show()</span><span class="s0">;</span>
+
+                                <span class="s1">FirebaseUser currentUser = firebaseAuth.getCurrentUser()</span><span class="s0">;</span>
+                                <span class="s0">if </span><span class="s1">(currentUser != </span><span class="s0">null</span><span class="s1">) {</span>
+                                    <span class="s1">String userId = currentUser.getUid()</span><span class="s0">;</span>
+                                    <span class="s4">// Ambil nilai aktual dari objek CustomItem yang dipilih</span>
+                                    <span class="s1">String tipe = ((CustomItem) tipeSpinner.getSelectedItem()).getSpinnerItemName()</span><span class="s0">;</span>
+                                    <span class="s1">String kamar = ((CustomItem) kamarSpinner.getSelectedItem()).getSpinnerItemName()</span><span class="s0">;</span>
+
+                                    <span class="s4">// Simpan data ke Firestore tergantung pada tipe akun yang dipilih</span>
+                                    <span class="s0">if </span><span class="s1">(selectedTipe.equals(</span><span class="s2">&quot;Pemilik&quot;</span><span class="s1">)) {</span>
+                                        <span class="s1">saveUserDataToFirestore(userId</span><span class="s0">, </span><span class="s1">fullName</span><span class="s0">, </span><span class="s1">userEmail</span><span class="s0">, </span><span class="s1">tipe</span><span class="s0">, null</span><span class="s1">)</span><span class="s0">;</span>
+                                    <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                        <span class="s1">saveUserDataToFirestore(userId</span><span class="s0">, </span><span class="s1">fullName</span><span class="s0">, </span><span class="s1">userEmail</span><span class="s0">, </span><span class="s1">tipe</span><span class="s0">, </span><span class="s1">kamar)</span><span class="s0">;</span>
+                                    <span class="s1">}</span>
+                                <span class="s1">}</span>
+
+                                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(RegisterActivity.</span><span class="s0">this, </span><span class="s1">LoginActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s1">task.getException().getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_LONG).show()</span><span class="s0">;</span>
+                            <span class="s1">}</span>
+                        <span class="s1">}</span>
+                    <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+
+
+    <span class="s0">private void </span><span class="s1">saveUserDataToFirestore(String userId</span><span class="s0">, </span><span class="s1">String fullName</span><span class="s0">, </span><span class="s1">String email</span><span class="s0">, </span><span class="s1">String tipeAkun</span><span class="s0">, </span><span class="s1">String noKamar) {</span>
+        <span class="s1">Map&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; userMap = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">userMap.put(</span><span class="s2">&quot;userId&quot;</span><span class="s0">, </span><span class="s1">userId)</span><span class="s0">;</span>
+        <span class="s1">userMap.put(</span><span class="s2">&quot;fullName&quot;</span><span class="s0">, </span><span class="s1">fullName)</span><span class="s0">;</span>
+        <span class="s1">userMap.put(</span><span class="s2">&quot;email&quot;</span><span class="s0">, </span><span class="s1">email)</span><span class="s0">;</span>
+        <span class="s1">userMap.put(</span><span class="s2">&quot;tipeAkun&quot;</span><span class="s0">, </span><span class="s1">tipeAkun)</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(noKamar != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">userMap.put(</span><span class="s2">&quot;noKamar&quot;</span><span class="s0">, </span><span class="s1">noKamar)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+        <span class="s1">firestore.collection(</span><span class="s2">&quot;users&quot;</span><span class="s1">).document(userId)</span>
+                <span class="s1">.set(userMap)</span>
+                <span class="s1">.addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;Void&gt;() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;Void&gt; task) {</span>
+                        <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                            <span class="s4">// Data pengguna berhasil disimpan di Firestore</span>
+                        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                            <span class="s4">// Gagal menyimpan data pengguna di Firestore</span>
+                            <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Failed to save user data: &quot; </span><span class="s1">+ task.getException().getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_LONG).show()</span><span class="s0">;</span>
+                            <span class="s1">Log.e(</span><span class="s2">&quot;FirestoreError&quot;</span><span class="s0">, </span><span class="s2">&quot;Failed to save user data&quot;</span><span class="s0">, </span><span class="s1">task.getException())</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private boolean </span><span class="s1">isValidPassword(String password) {</span>
+        <span class="s0">if </span><span class="s1">(password.length() &lt; </span><span class="s3">8</span><span class="s1">) {</span>
+            <span class="s0">return false;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">if </span><span class="s1">(!Pattern.compile(</span><span class="s2">&quot;[A-Z]&quot;</span><span class="s1">).matcher(password).find()) {</span>
+            <span class="s0">return false;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">if </span><span class="s1">(!Pattern.compile(</span><span class="s2">&quot;[a-z]&quot;</span><span class="s1">).matcher(password).find()) {</span>
+            <span class="s0">return false;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">if </span><span class="s1">(!Pattern.compile(</span><span class="s2">&quot;[0-9]&quot;</span><span class="s1">).matcher(password).find()) {</span>
+            <span class="s0">return false;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">if </span><span class="s1">(!Pattern.compile(</span><span class="s2">&quot;[^A-Za-z0-9]&quot;</span><span class="s1">).matcher(password).find()) {</span>
+            <span class="s0">return false;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">return true;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onBackPressed() {</span>
+        <span class="s0">super</span><span class="s1">.onBackPressed()</span><span class="s0">;</span>
+        <span class="s1">tipeSpinner.setSelection(</span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

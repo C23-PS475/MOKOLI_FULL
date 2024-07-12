@@ -1,0 +1,127 @@
+<html>
+<head>
+<title>MainActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.util.Log</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.cardview.widget.CardView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestore</span><span class="s0">;</span>
+
+
+<span class="s0">public class </span><span class="s1">MainActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+    <span class="s1">TextView Hi</span><span class="s0">, </span><span class="s1">welcome</span><span class="s0">;</span>
+    <span class="s1">CardView monitoring</span><span class="s0">, </span><span class="s1">transaksi</span><span class="s0">, </span><span class="s1">history</span><span class="s0">;</span>
+    <span class="s1">ImageView Logout</span><span class="s0">;</span>
+    <span class="s1">FirebaseAuth firebaseAuth</span><span class="s0">;</span>
+    <span class="s1">FirebaseFirestore firestore</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_main)</span><span class="s0">;</span>
+
+        <span class="s1">Hi = findViewById(R.id.textHi)</span><span class="s0">;</span>
+        <span class="s1">welcome = findViewById(R.id.textWelcome)</span><span class="s0">;</span>
+        <span class="s1">monitoring = findViewById(R.id.cvmonitoring)</span><span class="s0">;</span>
+        <span class="s1">transaksi = findViewById(R.id.cvtransaksi)</span><span class="s0">;</span>
+        <span class="s1">history = findViewById(R.id.cvhistory)</span><span class="s0">;</span>
+        <span class="s1">Logout = findViewById(R.id.imageLogout)</span><span class="s0">;</span>
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+
+        <span class="s1">monitoring.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s2">// Buka MonitoringActivity</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(MainActivity.</span><span class="s0">this, </span><span class="s1">MonitoringActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">transaksi.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s2">// Buka MonitoringActivity</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(MainActivity.</span><span class="s0">this, </span><span class="s1">TransaksiPenyewaActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">history.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s2">// Buka History</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(MainActivity.</span><span class="s0">this, </span><span class="s1">HistoryPenyewaActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">Logout.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">FirebaseAuth.getInstance().signOut()</span><span class="s0">;</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(MainActivity.</span><span class="s0">this,</span><span class="s1">LoginActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s2">// Mendapatkan data pengguna dari Firestore</span>
+        <span class="s1">FirebaseUser currentUser = firebaseAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(currentUser != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">String userId = currentUser.getUid()</span><span class="s0">;</span>
+            <span class="s1">getUserDataFromFirestore(userId)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">getUserDataFromFirestore(String userId) {</span>
+        <span class="s1">DocumentReference userRef = firestore.collection(</span><span class="s3">&quot;users&quot;</span><span class="s1">).document(userId)</span><span class="s0">;</span>
+        <span class="s1">userRef.get().addOnCompleteListener(task -&gt; {</span>
+            <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                <span class="s1">DocumentSnapshot document = task.getResult()</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(document.exists()) {</span>
+                    <span class="s2">// Dokumen ditemukan, ambil data nama pengguna</span>
+                    <span class="s1">String username = document.getString(</span><span class="s3">&quot;fullName&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+                    <span class="s2">// Set teks Hi + nama pengguna</span>
+                    <span class="s1">Hi.setText(</span><span class="s3">&quot;Hi, &quot; </span><span class="s1">+ username)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s2">// Dokumen tidak ditemukan</span>
+                    <span class="s1">Log.d(</span><span class="s3">&quot;Firestore&quot;</span><span class="s0">, </span><span class="s3">&quot;Document not found&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s2">// Gagal mengambil data dari Firestore</span>
+                <span class="s1">Log.e(</span><span class="s3">&quot;FirestoreError&quot;</span><span class="s0">, </span><span class="s3">&quot;Failed to get user data&quot;</span><span class="s0">, </span><span class="s1">task.getException())</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

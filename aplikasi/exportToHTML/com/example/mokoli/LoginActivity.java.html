@@ -1,0 +1,261 @@
+<html>
+<head>
+<title>LoginActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #6897bb;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+LoginActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.mokoli</span><span class="s0">;</span>
+
+<span class="s0">import static </span><span class="s1">android.content.ContentValues.TAG</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.annotation.SuppressLint</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.graphics.drawable.ColorDrawable</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.text.TextUtils</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.util.Log</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.util.Patterns</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AlertDialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnCompleteListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.Task</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.AuthResult</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.DocumentSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.firestore.FirebaseFirestore</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.messaging.FirebaseMessaging</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">retrofit2.Call</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">retrofit2.Callback</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">retrofit2.Response</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">retrofit2.Retrofit</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">LoginActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s1">TextView kata</span><span class="s0">, </span><span class="s1">min</span><span class="s0">, </span><span class="s1">lupa</span><span class="s0">;</span>
+    <span class="s1">EditText email</span><span class="s0">, </span><span class="s1">password</span><span class="s0">;</span>
+    <span class="s1">Button login</span><span class="s0">, </span><span class="s1">register</span><span class="s0">;</span>
+    <span class="s1">FirebaseAuth firebaseAuth</span><span class="s0">;</span>
+
+    <span class="s1">@SuppressLint(</span><span class="s2">&quot;MissingInflatedId&quot;</span><span class="s1">)</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_login)</span><span class="s0">;</span>
+
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">kata = findViewById(R.id.silahkan)</span><span class="s0">;</span>
+        <span class="s1">lupa = findViewById(R.id.lupa)</span><span class="s0">;</span>
+        <span class="s1">email = findViewById(R.id.emaillogin)</span><span class="s0">;</span>
+        <span class="s1">password = findViewById(R.id.passlogin)</span><span class="s0">;</span>
+        <span class="s1">login = findViewById(R.id.btnlogin)</span><span class="s0">;</span>
+        <span class="s1">register = findViewById(R.id.btndaftar)</span><span class="s0">;</span>
+
+        <span class="s1">register.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(LoginActivity.</span><span class="s0">this, </span><span class="s1">RegisterActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">lupa.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">AlertDialog.Builder builder = </span><span class="s0">new </span><span class="s1">AlertDialog.Builder(LoginActivity.</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">View dialogView = getLayoutInflater().inflate(R.layout.activity_lupa_password</span><span class="s0">, null</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">EditText emailBox = dialogView.findViewById(R.id.emailBox)</span><span class="s0">;</span>
+                <span class="s1">builder.setView(dialogView)</span><span class="s0">;</span>
+                <span class="s1">AlertDialog dialog = builder.create()</span><span class="s0">;</span>
+                <span class="s1">dialogView.findViewById(R.id.btnReset).setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+                        <span class="s1">String userEmail = emailBox.getText().toString()</span><span class="s0">;</span>
+                        <span class="s0">if </span><span class="s1">(TextUtils.isEmpty(userEmail) &amp;&amp; !Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()){</span>
+                            <span class="s1">Toast.makeText(LoginActivity.</span><span class="s0">this, </span><span class="s2">&quot;Enter your registered email id&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                            <span class="s0">return;</span>
+                        <span class="s1">}</span>
+                        <span class="s1">firebaseAuth.sendPasswordResetEmail(userEmail).addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;Void&gt;() {</span>
+                            <span class="s1">@Override</span>
+                            <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;Void&gt; task) {</span>
+                                <span class="s0">if </span><span class="s1">(task.isSuccessful()){</span>
+                                    <span class="s1">Toast.makeText(LoginActivity.</span><span class="s0">this, </span><span class="s2">&quot;Check your email&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                    <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+                                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                    <span class="s1">Toast.makeText(LoginActivity.</span><span class="s0">this, </span><span class="s2">&quot;Unable to send, failed&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+                        <span class="s1">})</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+                <span class="s1">dialogView.findViewById(R.id.btnCancel).setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+                        <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(dialog.getWindow() != </span><span class="s0">null</span><span class="s1">){</span>
+                    <span class="s1">dialog.getWindow().setBackgroundDrawable(</span><span class="s0">new </span><span class="s1">ColorDrawable(</span><span class="s3">0</span><span class="s1">))</span><span class="s0">;</span>
+                <span class="s1">}</span>
+                <span class="s1">dialog.show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">login.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s4">// Mendapatkan nilai input</span>
+                <span class="s1">String userEmail = email.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">String userPassword = password.getText().toString()</span><span class="s0">;</span>
+
+                <span class="s4">// Melakukan validasi input</span>
+                <span class="s0">if </span><span class="s1">(TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(userPassword)) {</span>
+                    <span class="s4">// Menampilkan pesan jika ada input yang kosong</span>
+                    <span class="s1">Toast.makeText(LoginActivity.</span><span class="s0">this, </span><span class="s2">&quot;Harap lengkapi email dan password&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s4">// Melakukan login</span>
+                    <span class="s1">loginUser(userEmail</span><span class="s0">, </span><span class="s1">userPassword)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">loginUser(String userEmail</span><span class="s0">, </span><span class="s1">String userPassword) {</span>
+        <span class="s1">firebaseAuth.signInWithEmailAndPassword(userEmail</span><span class="s0">, </span><span class="s1">userPassword)</span>
+                <span class="s1">.addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;AuthResult&gt;() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;AuthResult&gt; task) {</span>
+                        <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                            <span class="s1">String userId = firebaseAuth.getCurrentUser().getUid()</span><span class="s0">;</span>
+                            <span class="s1">sendUserIdToServer(userId)</span><span class="s0">;</span>
+                            <span class="s1">FirebaseFirestore firestore = FirebaseFirestore.getInstance()</span><span class="s0">;</span>
+                            <span class="s1">firestore.collection(</span><span class="s2">&quot;users&quot;</span><span class="s1">).document(userId)</span>
+                                    <span class="s1">.get().addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;DocumentSnapshot&gt;() {</span>
+                                        <span class="s1">@Override</span>
+                                        <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;DocumentSnapshot&gt; task) {</span>
+                                            <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                                                <span class="s1">DocumentSnapshot document = task.getResult()</span><span class="s0">;</span>
+                                                <span class="s0">if </span><span class="s1">(document.exists()) {</span>
+                                                    <span class="s4">// Mendapatkan token FCM yang baru</span>
+                                                    <span class="s1">FirebaseMessaging.getInstance().getToken()</span>
+                                                            <span class="s1">.addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;String&gt;() {</span>
+                                                                <span class="s1">@Override</span>
+                                                                <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;String&gt; task) {</span>
+                                                                    <span class="s0">if </span><span class="s1">(!task.isSuccessful()) {</span>
+                                                                        <span class="s1">Log.w(TAG</span><span class="s0">, </span><span class="s2">&quot;Fetching FCM registration token failed&quot;</span><span class="s0">, </span><span class="s1">task.getException())</span><span class="s0">;</span>
+                                                                        <span class="s0">return;</span>
+                                                                    <span class="s1">}</span>
+
+                                                                    <span class="s4">// Get new FCM registration token</span>
+                                                                    <span class="s1">String newToken = task.getResult()</span><span class="s0">;</span>
+
+                                                                    <span class="s4">// Mendapatkan token FCM yang sudah disimpan di Firestore</span>
+                                                                    <span class="s1">String storedToken = document.getString(</span><span class="s2">&quot;tokenFCM&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+
+
+                                                                    <span class="s4">// Update token FCM yang ada di Firestore hanya jika token baru berbeda</span>
+                                                                    <span class="s0">if </span><span class="s1">(!newToken.equals(storedToken)) {</span>
+                                                                        <span class="s1">firestore.collection(</span><span class="s2">&quot;users&quot;</span><span class="s1">).document(userId)</span>
+                                                                                <span class="s1">.update(</span><span class="s2">&quot;tokenFCM&quot;</span><span class="s0">, </span><span class="s1">newToken)</span>
+                                                                                <span class="s1">.addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;Void&gt;() {</span>
+                                                                                    <span class="s1">@Override</span>
+                                                                                    <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;Void&gt; task) {</span>
+                                                                                        <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+                                                                                            <span class="s1">Log.d(TAG</span><span class="s0">, </span><span class="s2">&quot;Token FCM berhasil diperbarui&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+                                                                                            <span class="s4">// Setelah token FCM diperbarui, lanjutkan ke halaman yang sesuai</span>
+                                                                                            <span class="s1">String tipeAkun = document.getString(</span><span class="s2">&quot;tipeAkun&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                                                                            <span class="s0">if </span><span class="s1">(tipeAkun != </span><span class="s0">null </span><span class="s1">&amp;&amp; tipeAkun.equals(</span><span class="s2">&quot;Pemilik&quot;</span><span class="s1">)) {</span>
+                                                                                                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(LoginActivity.</span><span class="s0">this, </span><span class="s1">HomeAdminActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                                                                                                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                                                                                            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                                                                                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(LoginActivity.</span><span class="s0">this, </span><span class="s1">MainActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                                                                                                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                                                                                            <span class="s1">}</span>
+                                                                                        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                                                                            <span class="s1">Log.e(TAG</span><span class="s0">, </span><span class="s2">&quot;Gagal memperbarui token FCM&quot;</span><span class="s0">, </span><span class="s1">task.getException())</span><span class="s0">;</span>
+                                                                                        <span class="s1">}</span>
+                                                                                    <span class="s1">}</span>
+                                                                                <span class="s1">})</span><span class="s0">;</span>
+                                                                    <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                                                        <span class="s4">// Jika token baru sama dengan token yang sudah ada di Firestore</span>
+                                                                        <span class="s1">Log.d(TAG</span><span class="s0">, </span><span class="s2">&quot;Token FCM sudah diperbarui sebelumnya&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+                                                                        <span class="s4">// Lanjutkan ke halaman yang sesuai tanpa memperbarui Firestore</span>
+                                                                        <span class="s1">String tipeAkun = document.getString(</span><span class="s2">&quot;tipeAkun&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                                                        <span class="s0">if </span><span class="s1">(tipeAkun != </span><span class="s0">null </span><span class="s1">&amp;&amp; tipeAkun.equals(</span><span class="s2">&quot;Pemilik&quot;</span><span class="s1">)) {</span>
+                                                                            <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(LoginActivity.</span><span class="s0">this, </span><span class="s1">HomeAdminActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                                                                            <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                                                                        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                                                            <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(LoginActivity.</span><span class="s0">this, </span><span class="s1">MainActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                                                                            <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                                                                        <span class="s1">}</span>
+                                                                    <span class="s1">}</span>
+                                                                <span class="s1">}</span>
+                                                            <span class="s1">})</span><span class="s0">;</span>
+                                                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                                    <span class="s1">Toast.makeText(LoginActivity.</span><span class="s0">this, </span><span class="s2">&quot;Data pengguna tidak ditemukan&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                                <span class="s1">}</span>
+                                            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                                <span class="s1">Toast.makeText(LoginActivity.</span><span class="s0">this, </span><span class="s2">&quot;Gagal mengambil data pengguna: &quot; </span><span class="s1">+ task.getException().getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                            <span class="s1">}</span>
+                                        <span class="s1">}</span>
+                                    <span class="s1">})</span><span class="s0">;</span>
+                        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                            <span class="s1">Toast.makeText(LoginActivity.</span><span class="s0">this, </span><span class="s1">task.getException().getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_LONG).show()</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s4">// Fungsi untuk mengirimkan userID ke server side</span>
+    <span class="s0">private void </span><span class="s1">sendUserIdToServer(String userId) {</span>
+        <span class="s1">Retrofit retrofit = RetrofitClient.getClient(</span><span class="s2">&quot;http://147.139.214.76:3000/&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">ApiService apiService = retrofit.create(ApiService.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">UserIDData userIDData = </span><span class="s0">new </span><span class="s1">UserIDData(userId)</span><span class="s0">;</span>
+        <span class="s1">Call&lt;Void&gt; call = apiService.sendUserID(userIDData)</span><span class="s0">;</span>
+        <span class="s1">call.enqueue(</span><span class="s0">new </span><span class="s1">Callback&lt;Void&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onResponse(Call&lt;Void&gt; call</span><span class="s0">, </span><span class="s1">Response&lt;Void&gt; response) {</span>
+                <span class="s0">if </span><span class="s1">(response.isSuccessful()) {</span>
+                    <span class="s1">Log.d(TAG</span><span class="s0">, </span><span class="s2">&quot;UserID berhasil dikirim ke server side&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s4">// Lanjutkan dengan proses selanjutnya jika diperlukan</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">Log.e(TAG</span><span class="s0">, </span><span class="s2">&quot;Gagal mengirim UserID ke server side&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onFailure(Call&lt;Void&gt; call</span><span class="s0">, </span><span class="s1">Throwable t) {</span>
+                <span class="s1">Log.e(TAG</span><span class="s0">, </span><span class="s2">&quot;Terjadi kesalahan: &quot; </span><span class="s1">+ t.getMessage())</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

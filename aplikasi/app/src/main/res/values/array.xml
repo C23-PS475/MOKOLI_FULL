@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="options_list">
+        <item>Rp. 20.000</item>
+        <item>Rp. 50.000</item>
+        <item>Rp. 100.000</item>
+        <item>Rp. 200.000</item>
+        <item>Rp. 500.000</item>
+    </string-array>
+
+    <string-array name="tipe_akun_array">
+        <item>Pilih Tipe Akun</item>
+        <item>Pemilik</item>
+        <item>Penyewa</item>
+    </string-array>
+
+    <string-array name="metode_pembayaran_array">
+        <item>Metode Pembayaran</item>
+        <item>Cash</item>
+        <item>Transfer</item>
+    </string-array>
+</resources>

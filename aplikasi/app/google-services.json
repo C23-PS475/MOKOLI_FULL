@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "872289970226",
+    "project_id": "mokoli-561f5",
+    "storage_bucket": "mokoli-561f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872289970226:android:1bfa771b724c6ccb3db42b",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAt3BsIiaPDqX5KcwQwjyQrC7R9CEuUNEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872289970226:android:89e001573176679b3db42b",
+        "android_client_info": {
+          "package_name": "com.example.mokoli"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAt3BsIiaPDqX5KcwQwjyQrC7R9CEuUNEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

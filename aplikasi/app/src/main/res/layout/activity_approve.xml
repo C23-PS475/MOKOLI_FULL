@@ -1,0 +1,199 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialogapprove"
+    app:layout_constraintCircleRadius="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialogBox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/white_box"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/nama"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/blue_round"
+            android:drawableLeft="@drawable/baseline_account"
+            android:drawablePadding="8dp"
+            android:padding="10dp"
+            android:text="Nama User"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/trpembelian"
+            android:layout_width="174dp"
+            android:layout_height="34dp"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/beli"
+            app:layout_constraintTop_toBottomOf="@+id/trtgl"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/tgl"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_marginTop="8dp"
+            android:text="Request Date            :"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.066"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nama"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/beli"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Electricity Purchase :"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.066"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tgl"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/kwh"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Total kWh                  :"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.065"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/beli" />
+
+        <TextView
+            android:id="@+id/byr"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Payment                    :"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.065"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/kwh"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/trtgl"
+            android:layout_width="174dp"
+            android:layout_height="34dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/tgl"
+            app:layout_constraintTop_toBottomOf="@+id/nama"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/trjumlah"
+            android:layout_width="174dp"
+            android:layout_height="34dp"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/kwh"
+            app:layout_constraintTop_toBottomOf="@+id/trpembelian"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/trmetode"
+            android:layout_width="174dp"
+            android:layout_height="34dp"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/byr"
+            app:layout_constraintTop_toBottomOf="@+id/trjumlah"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/ttbukti"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:text="Proof of Payment    :"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.066"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/byr"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/buktiImageView"
+            android:layout_width="323dp"
+            android:layout_height="387dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnSetuju"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ttbukti"
+            app:layout_constraintVertical_bias="0.25">
+
+        </ImageView>
+
+        <Button
+            android:id="@+id/btnSetuju"
+            android:layout_width="146dp"
+            android:layout_height="50dp"
+            android:background="@drawable/oval_button_background"
+            android:text="Approve"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.097"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.975" />
+
+        <Button
+            android:id="@+id/btnTolak"
+            android:layout_width="156dp"
+            android:layout_height="50dp"
+            android:background="@drawable/oval_button_background"
+            android:text="Reject"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.477"
+            app:layout_constraintStart_toEndOf="@+id/btnSetuju"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.974" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
